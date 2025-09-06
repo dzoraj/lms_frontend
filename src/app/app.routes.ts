@@ -58,11 +58,11 @@ export const routes: Routes = [
     ],
   },
   {
-  path: 'nastavnik-dashboard',
+  path: 'teacher-dashboard',
   canActivate: [authGuard],
   data: { requiredRoles: ['ROLE_TEACHER'] },
   loadComponent: () => 
-    import('./components/nastavnik-dashboard/nastavnik-dashboard.component').then(m => m.NastavnikDashboardComponent)
+    import('./components/teacher-dashboard/teacher-dashboard.component').then(m => m.TeacherDashboardComponent)
   },
   {
   path: 'student-dashboard',

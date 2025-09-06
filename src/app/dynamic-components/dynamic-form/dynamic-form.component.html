@@ -1,13 +1,31 @@
-<div>
-    <form (ngSubmit)="onSubmit()" [formGroup]="form">
-      @for (question of questions; track question) {
-        <div class="form-row">
-          <app-question [question]="question" [form]="form"></app-question>
-        </div>
-      }
-      <div class="form-row">
-        <button type="submit" [disabled]="!form.valid">Save</button>
-        <button (click)="resetForm()">Reset</button>
-      </div>
-    </form>
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+
+  <div *ngFor="let question of questions" class="form-row">
+
+    <!-- Only show dropdown if options exist AND it's not empty -->
+    <div *ngIf="(question.options?.length ?? 0) > 0">
+      <label>{{ question.label }}</label>
+      <select [formControlName]="question.key">
+        <option [value]="''" disabled selected>Select {{ question.label }}</option>
+        <option *ngFor="let opt of question.options" [value]="opt.id">{{ opt.naziv }}</option>
+      </select>
+    </div>
+
+    <!-- Otherwise, show normal input -->
+    <div *ngIf="!question.options || question.options.length === 0">
+      <input
+        [type]="question.type || 'text'"
+        [formControlName]="question.key"
+        [placeholder]="question.label"
+        [hidden]="question.type === 'hidden'"
+      />
+    </div>
+
   </div>
+
+  <div class="form-row">
+    <button type="submit" [disabled]="!form.valid">Save</button>
+    <button type="button" (click)="resetForm()">Reset</button>
+  </div>
+
+</form>

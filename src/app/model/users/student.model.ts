@@ -5,7 +5,6 @@ import { RegisteredUser } from "./registered-user.model";
 
 
 export interface Student extends RegisteredUser {
-  name: string;
   jmbg: string;
   courseAttendances: CourseAttendance[];
   studentInYear: StudentInYear[];

@@ -17,7 +17,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   isAdmin = false;
   isStudent = false;
-  isNastavnik = false;
+  isTeacher = false;
   isSluzba = false;
 
 
@@ -39,12 +39,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
       if (loggedIn) {
         this.isAdmin = roles.includes('ROLE_ADMIN');
         this.isStudent = roles.includes('ROLE_STUDENT');
-        this.isNastavnik = roles.includes('ROLE_NASTAVNIK');
+        this.isTeacher = roles.includes('ROLE_NASTAVNIK');
         this.isSluzba = roles.includes('ROLE_SLUZBA');
       } else {
         this.isAdmin = false;
         this.isStudent = false;
-        this.isNastavnik = false;
+        this.isTeacher = false;
         this.isSluzba = false;
       }
     });

@@ -3,6 +3,8 @@ import { DropdownQuestion } from '../../model/questions/question-dropdown';
 import { QuestionBase } from '../../model/questions/question-base';
 import { TextboxQuestion } from '../../model/questions/question-textbox';
 import { Observable, of } from 'rxjs';
+import { Teacher } from '../../model/users/teacher.model';
+import { University } from '../../model/university/university.model';
 @Injectable()
 export class QuestionService {
   getLoginQuestions() {
@@ -53,18 +55,8 @@ export class QuestionService {
 }
 
   
-  getTeacherQuestions() {
-    const questions: QuestionBase<string>[] = [
-      // prikazuje teachere normalno, ali ih ne kreira, valjda zato što nema polje za adresu
-      new TextboxQuestion({ key: 'id', type: 'hidden' }),
-      new TextboxQuestion({ key: 'name', label: 'Name', required: true }),
-      new TextboxQuestion({ key: 'biography', label: 'Biography' }),
-      new TextboxQuestion({ key: 'jmbg', label: 'JMBG', required: true }),
-      new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
-      new TextboxQuestion({ key: 'password', label: 'Password', required: true })
-    ];
-    return of(questions.sort((a, b) => a.order - b.order));
-  } getUserQuestions() { 
+
+   getUserQuestions() { 
     const questions: QuestionBase<string>[] = [
       // radi normalno
       new TextboxQuestion({ key: 'id', type: 'hidden' }),
@@ -236,7 +228,7 @@ export class QuestionService {
   }
   getTitleQuestions() {
     const questions: QuestionBase<string>[] = [
-      // ne radi jer ne prikazuje nastavnike u kreiranju
+      // ne radi jer ne prikazuje teachere u kreiranju
       // barem ne prikazuje 403 grešku otkad sam izmenio URI na backendu
       new TextboxQuestion({
         key: 'id',
@@ -383,31 +375,67 @@ getStudentInYearQuestions() {
   ];
   return of(questions.sort((a, b) => a.order - b.order));
 }
-getFacultyQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // baguje prikaz fakulteta, ne znam zašto, prikazuje prvi faks koji sam dodao ali ne prikazuje sledeće koje sam dodao
-    // isto kao ovo sledeće pitanje
-    new TextboxQuestion({ key: 'id', label: 'ID', required: false }),
-    new TextboxQuestion({ key: 'name', label: 'Faculty Name', required: false }),
-    new TextboxQuestion({ key: 'dean', label: 'Dean', required: false }),
-    new TextboxQuestion({ key: 'university', label: 'University', required: false }),
-    new TextboxQuestion({ key: 'addresses', label: 'Addresses', required: false }),
+  getTeacherQuestions() {
+    const questions: QuestionBase<string>[] = [
+      // prikazuje teachere normalno, ali ih ne kreira, valjda zato što nema polje za adresu
+      new TextboxQuestion({ key: 'id', type: 'hidden' }),
+      new TextboxQuestion({ key: 'name', label: 'Name', required: true }),
+      new TextboxQuestion({ key: 'biography', label: 'Biography' }),
+      new TextboxQuestion({ key: 'jmbg', label: 'JMBG', required: true }),
+      new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
+      new TextboxQuestion({ key: 'password', label: 'Password', required: true })
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }  
+
+getFacultyQuestions(context: { teachers?: Teacher[], universities?: University[] } = {}): QuestionBase<any>[] {
+  const teachers = context.teachers || [];
+  const universities = context.universities || [];
+
+  return [
+    new QuestionBase({
+      key: 'id', type: 'hidden', controlType: 'textbox'
+    }),
+    new QuestionBase({
+      key: 'name', label: 'Faculty Name', required: true, controlType: 'textbox'
+    }),
+    new QuestionBase({
+      key: 'dean', label: 'Dean', controlType: 'dropdown',
+      options: teachers.map(t => ({ id: t.id!, naziv: t.name ?? 'Unknown' }))
+    }),
+    new QuestionBase({
+      key: 'university', label: 'University', controlType: 'dropdown',
+      options: universities.map(u => ({ id: u.id!, naziv: u.name ?? 'Unknown' }))
+    }),
+    new QuestionBase({
+      key: 'addresses', label: 'Addresses', controlType: 'textbox'
+    }),
   ];
-  
-  return of(questions.sort((a, b) => a.order - b.order));
 }
-getUniversityQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // ja ne znam šta se ovde dešava, prikazuje prvi univerzitet koji sam napravio u MySQL Workbench-u,
-    // ali neće da prikazuje više od tog prvog, čak i kad sam dodao druge univerzitete
-    // takođe prođe kreiranje univerziteta, ali ne prikazuje se u tabeli, niti se zapravo napravi u SQL-u
-    // znači ovo ne radi, iz nekog razloga, ili sam ja nešto zaribao na mom kompu
-    new TextboxQuestion({ key: 'id', label: 'ID', required: false }),
-    new TextboxQuestion({ key: 'name', label: 'University Name', required: false }),
-    new TextboxQuestion({ key: 'establishmentDate', label: 'Establishment Date', required: false }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
+
+
+
+    getUniversityQuestions(universities: University[] = []): QuestionBase<any>[] {
+      const questions: QuestionBase<any>[] = [
+        new TextboxQuestion({ key: 'id', label: 'ID', required: false }),
+        new TextboxQuestion({ key: 'name', label: 'University Name', required: true }),
+        new TextboxQuestion({ key: 'establishmentDate', label: 'Establishment Date', type: 'date', required: false }),
+
+        new DropdownQuestion({
+          key: 'someOptionalField',
+          label: 'Optional Dropdown',
+          required: false,
+          options: universities.map(u => ({
+            id: u.id!,
+            naziv: u.name ?? 'Unknown'
+          }))
+        })
+      ];
+
+      return questions.sort((a, b) => a.order - b.order);
+    }
+
+
 getCourseRealizationQuestions() {
   const questions: QuestionBase<any>[] = [
     // ne radi, ali ne prijavljuje 403 forbidden

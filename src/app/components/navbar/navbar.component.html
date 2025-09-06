@@ -17,7 +17,7 @@
     <ng-container *ngIf="isLoggedIn">
       <a *ngIf="isAdmin" routerLink="/admin-dashboard" class="nav-link">Admin Dashboard</a>
       <a *ngIf="isStudent" routerLink="/student-dashboard" class="nav-link">Student Dashboard</a>
-      <a *ngIf="isNastavnik" routerLink="/nastavnik-dashboard" class="nav-link">Nastavnik Dashboard</a>
+      <a *ngIf="isTeacher" routerLink="/teacher-dashboard" class="nav-link">Teacher Dashboard</a>
       <a *ngIf="isSluzba" routerLink="/sluzba-dashboard" class="nav-link">Sluzba Dashboard</a>
       <a routerLink="/profile" class="nav-link">My Profile</a>
       <button (click)="logout()" class="nav-link btn-link">Logout</button>

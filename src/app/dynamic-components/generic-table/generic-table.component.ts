@@ -1,84 +1,80 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NoDataDirective } from '../../directives/no-data.directive';
-import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-generic-table',
-  imports: [NoDataDirective],
+  standalone: true,
+  imports: [NoDataDirective,CommonModule,FormsModule],
   templateUrl: './generic-table.component.html',
-  styleUrl: './generic-table.component.css',
-  standalone:true
+  styleUrls: ['./generic-table.component.css']
 })
 export class GenericTableComponent implements OnChanges {
   
-  @Input()
-  data: any[] = [];
-  
-  columns : string[] = [];
+  @Input() data: any[] = [];
+  @Output() removeEvent = new EventEmitter<number>();
+  @Output() editEvent = new EventEmitter<any>();
+
+  columns: string[] = [];
+  filteredData: any[] = [];
+  searchTerm: string = '';
+
+  sortDirections: { [key: string]: 'asc' | 'desc' } = {};
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] && this.data && this.data.length > 0) {      
       this.columns = Object.keys(this.data[0]).filter(key => key !== "id");
+      this.filteredData = [...this.data]; // initialize filtered data
     } 
   }
 
-getValue(row: any, column: string): any {
-  const value = row[column];
-
-  if (value === null || value === undefined) return '';
-
-  if (typeof value === 'object') {
-    // If it's an array, join their names
-    if (Array.isArray(value)) {
-      return value.map(v => v.name || '').filter(n => n).join(', ');
+  getValue(row: any, column: string): any {
+    const value = row[column];
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) return value.map(v => v.name || '').filter(n => n).join(', ');
+      return value.name ?? JSON.stringify(value);
     }
-    // Else try to get name or fallback to string
-    return value.name ?? JSON.stringify(value);
+    return value;
   }
 
-  return value;
-}
-
-
-  @Output()
-  removeEvent = new EventEmitter<number>();
-
-  @Output()
-  editEvent = new EventEmitter<any>();
-
-remove(id: number | undefined): void {
-  if (id === undefined || id === null) {
-    console.error("Tried to delete but ID is undefined/null");
-    return;
+  remove(id: number | undefined): void {
+    if (id === undefined || id === null) return;
+    this.removeEvent.emit(id);
   }
-  console.log("Emitting delete for ID:", id);
-  this.removeEvent.emit(id);
-}
 
-
-
-  update(data: any): void{
+  update(data: any): void {
     this.editEvent.emit(data);
   }
 
-  sortDirections: { [key: string]: 'asc' | 'desc' } = {};
-
   sort(columnKey: string) {
     this.sortDirections[columnKey] = this.sortDirections[columnKey] === 'asc' ? 'desc' : 'asc';
+    const direction = this.sortDirections[columnKey] === 'asc' ? 1 : -1;
 
-    this.data = [...this.data].sort((a, b) => {
+    this.filteredData = [...this.filteredData].sort((a, b) => {
       const valueA = a[columnKey];
       const valueB = b[columnKey];
-
-      const direction = this.sortDirections[columnKey] === 'asc' ? 1 : -1;
-
       if (typeof valueA === 'string' && typeof valueB === 'string') {
         return direction * valueA.localeCompare(valueB);
       } else {
-        return direction * (valueA - valueB);
+        return direction * ((valueA || 0) - (valueB || 0));
       }
     });
   }
 
-  
+  filterTable() {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredData = [...this.data];
+      return;
+    }
+
+    this.filteredData = this.data.filter(row => {
+      return this.columns.some(col => {
+        const val = this.getValue(row, col);
+        return val.toString().toLowerCase().includes(term);
+      });
+    });
+  }
 }
