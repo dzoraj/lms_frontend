@@ -1,0 +1,31 @@
+
+<div class="container mt-4">
+
+  <h2 class="mb-3 text-capitalize">{{ endpoint }}</h2>
+
+  <button class="btn btn-primary mb-3" (click)="onAdd()" *ngIf="!isEditing">Add New {{ endpoint  }}</button>
+
+  <div *ngIf="isEditing">
+    <app-dynamic-form
+      [questions]="questions"
+      [model]="selectedModel || {}"
+      (submitEvent)="onSubmit($event)">
+    </app-dynamic-form>
+
+    <button class="btn btn-secondary mt-2" (click)="onCancel()">Cancel</button>
+  </div>
+
+  <div *ngIf="!isEditing && data.length > 0">
+    <app-generic-table
+      [data]="data"
+      (removeEvent)="onDelete($event)"
+      (editEvent)="onEdit($event)">
+    </app-generic-table>
+  </div>
+
+  <div *ngIf="!isEditing && (!data || data.length === 0)">
+    <p>No {{ endpoint }} records found.</p>
+  </div>
+  <button class="btn btn-secondary mt-2" (click)="onBack()">Back</button>
+
+</div>

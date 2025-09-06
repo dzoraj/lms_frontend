@@ -1,0 +1,138 @@
+:host {
+  margin-top: auto;
+  background-color: var(--secondary-color);
+  color: var(--white);
+  padding: 3rem 2rem 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.95rem;
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.15);
+  display: block;
+  
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.footer-social-contact {
+  flex: 1 1 280px;
+  min-width: 280px;
+}
+
+.social-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.social-icons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.social-icons li a {
+  color: var(--white);
+  transition: color 0.3s ease;
+}
+
+.social-icons li a:hover {
+  color: var(--primary-color);
+}
+
+.contact-info h3 {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.contact-info p {
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.contact-info a {
+  color: var(--white);
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.contact-info a:hover {
+  color: var(--primary-color);
+}
+
+.footer-links {
+  flex: 1 1 160px;
+  min-width: 160px;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links li span {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--white);
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.footer-links li a {
+  color: var(--white);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links li a:hover {
+  color: var(--primary-color);
+}
+
+.footer-branding {
+  flex: 1 1 200px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.footer-branding a img {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.footer-branding p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--white);
+  opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .footer-social-contact,
+  .footer-links,
+  .footer-branding {
+    min-width: 100%;
+  }
+}

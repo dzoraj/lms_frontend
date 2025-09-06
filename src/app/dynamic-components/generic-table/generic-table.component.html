@@ -1,0 +1,32 @@
+<ng-template #praznaTabela>
+    <tbody>
+      <tr>
+        <td colspan="7">No data to load</td>
+      </tr>
+    </tbody>
+</ng-template>
+
+<table>
+    <thead>
+        <tr>
+            @for (column of columns; track $index){
+                <td><button (click)="sort(column)">{{column}}</button></td>
+            }
+            <td>Actions</td>
+        </tr>
+    </thead>
+    <tbody *appNoData="data; template: praznaTabela">
+        @for (row of data; track row){
+            <tr>
+                @for (column of columns; track $index){
+                    <td>{{getValue(row, column)}}</td>
+                }
+                <td>
+                    <button (click)="remove(row.id)">Ukloni</button>
+                    <button (click)="update(row)">Izmeni</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

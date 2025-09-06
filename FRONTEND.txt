@@ -1,0 +1,284 @@
+==================== COMMIT COUNTS PER AUTHOR ====================
+     7	dzoraj <igorverkic03@gmail.com>
+     4	Mihajlo Svrkota <msvrkota03@gmail.com>
+     4	Rastko Gavrić <rastkogavric250@gmail.com>
+     3	mihajlosvrkota <msvrkota03@gmail.com>
+     1	igor <igorverkic03@gmail.com>
+
+==================== LINES ADDED/DELETED PER AUTHOR ====================
+Rastko Gavric             Insertions:      982  Deletions:       60  Total:     1042
+mihajlosvrkota            Insertions:      105  Deletions:        4  Total:      109
+igor                      Insertions:    15655  Deletions:        0  Total:    15655
+dzoraj                    Insertions:     4242  Deletions:      456  Total:     4698
+
+==================== TIMELINE OF COMMITS ====================
+2025-06-02 igor initial commit
+2025-06-09 dzoraj Added a super basic crud. Needs work!
+2025-06-09 dzoraj Created corresponding models from the backend app (springboot)
+2025-06-10 dzoraj Added CSS for tables and forms
+2025-06-15 dzoraj Making the jwt work and the basics(home page,navbar,login...)
+2025-06-16 dzoraj entity-logic
+2025-06-17 mihajlosvrkota dodao komentare koji obajsnjavaju zasto pitanja ne rade (takodje ispravio komentar kod usersa)
+2025-06-17 mihajlosvrkota dodao komentare koji objašnjavaju zasto pitanja ne rade
+2025-06-21 dzoraj Fixing footer
+2025-07-03 dzoraj Checking if i pushed all to frondent
+2025-07-07 mihajlosvrkota dodao preostala pitanja u config da se pojavljuje svaki entitet u admin dashboardu
+2025-07-14 Rastko Gavrić Dodata student-dashboard stranica i logika za prikaz po roli
+2025-07-14 Rastko Gavrić Merge branch 'dev-frontend' of https://gitlab.com/singidunum_team/lms-frontend into dev-frontend
+2025-07-19 Mihajlo Svrkota Merge branch 'basic-crud' into dev-frontend
+2025-07-22 Rastko Gavrić  Added teacher and student service dashboard
+2025-08-09 Mihajlo Svrkota started work on teacher dashboard
+2025-08-23 Rastko Gavrić add functionality for Courses and Annnouncements
+2025-08-27 Mihajlo Svrkota added nastavnik-subjects, teachers can now view subjects they are assigned to
+2025-08-27 Mihajlo Svrkota moved styling to a seperate CSS file for nastavnik-subjects
+
+==================== COMMITS PER BRANCH ====================
+---- origin/basic-crud ----
+Commits: 4
+---- origin/dev-frontend ----
+Commits: 15
+---- origin/main ----
+Commits: 1
+---- origin/student-dev ----
+Commits: 16
+---- origin/teacher-dev ----
+Commits: 18
+---- origin/user-interface ----
+Commits: 8
+
+==================== FILES TOUCHED PER AUTHOR ====================
+Author: dzoraj
+    src/app/components/home/home.component.css
+    src/app/components/footer/footer.component.html
+    src/app/app.routes.ts
+    src/app/components/user-role-manager/user-role-manager.component.ts
+    src/app/service/dynamic-service/dynamic.service.ts
+    src/app/components/navbar/navbar.component.html
+    src/app/components/university/university.component.spec.ts
+    src/app/components/study-programs/study-programs.component.spec.ts
+    src/app/components/study-programs/study-programs.component.html
+    src/app/model/login.model.ts
+    src/app/components/faculties/faculties.component.css
+    src/app/components/navbar/navbar.component.ts
+    angular.json
+    src/app/dynamic-components/generic-table/generic-table.component.css
+    src/app/components/user-role-manager/user-role-manager.component.html
+    src/app/app.config.ts
+    src/app/components/university/university.component.css
+    src/app/components/faculties/faculties.component.spec.ts
+    src/app/components/login/login.component.css
+    src/app/model/users/user.model.ts
+    src/app/components/register/register.component.spec.ts
+    src/app/dynamic-components/generic-table/generic-table.component.ts
+    src/app/model/notification.model.ts
+    src/app/directives/no-data.directive.ts
+    src/app/components/faculty-detail/faculty-detail.component.spec.ts
+    src/app/dynamic-components/dynamic-form/dynamic-form.component.css
+    src/app/auth-guard.guard.spec.ts
+    src/app/model/subject/learning-outcome.model.ts
+    src/app/service/question/question.service.spec.ts
+    src/app/components/profile/profile.component.css
+    src/app/components/admin-dashboard/admin-dashboard.component.html
+    src/app/components/generic-crud/generic-crud.component.css
+    src/index.html
+    src/styles.css
+    src/app/dynamic-components/dynamic-form/dynamic-form.component.ts
+    src/app/components/admin-dashboard/admin-dashboard.component.css
+    src/app/model/teaching/knowledge-evaluation.model.ts
+    src/app/components/university/university.component.html
+    src/app/model/teaching/teaching-session.model.ts
+    src/app/dynamic-components/dynamic-form-question/dynamic-form-question.component.css
+    src/app/model/title/title-type.model.ts
+    src/app/service/question-control/question-control.service.spec.ts
+    src/app/components/home/home.component.spec.ts
+    src/app/dynamic-components/dynamic-form/dynamic-form.component.spec.ts
+    src/app/components/login/login.component.spec.ts
+    src/app/model/subject/subject.model.ts
+    src/app/dynamic-components/view-table/view-table.component.ts
+    src/app/model/teaching/evaluation-instrument.model.ts
+    src/app/model/questions/question-dropdown.ts
+    src/app/dynamic-components/dynamic-form-question/dynamic-form-question.component.ts
+    src/app/service/question-resolver/question-resolver.service.ts
+    src/app/model/subject/course-attendance.model.ts
+    src/app/model/student/student-in-year.model.ts
+    src/app/components/faculty-detail/faculty-detail.component.html
+    src/app/model/questions/question-base.ts
+    src/app/components/navbar/navbar.component.spec.ts
+    src/app/model/users/role.model.ts
+    src/app/components/navbar/navbar.component.css
+    src/app/components/home/home.component.ts
+    src/app/service/selected-faculty.service.spec.ts
+    src/app/components/register/register.component.html
+    src/app/model/title/scientific-field.model.ts
+    src/app/components/register/register.component.css
+    src/app/model/teaching/teaching-type.model.ts
+    src/app/model/forum/topic.model.ts
+    src/app/components/generic-crud/generic-crud.component.spec.ts
+    src/app/auth.interceptor.spec.ts
+    src/app/dynamic-components/view-table/view-table.component.spec.ts
+    src/app/model/users/registered-user.model.ts
+    src/app/model/teaching/evaluation-attempt.model.ts
+    src/app/dynamic-components/generic-table/generic-table.component.spec.ts
+    src/app/model/forum/user-on-forum.model.ts
+    src/assets/db.png
+    src/app/components/user-role-manager/user-role-manager.component.css
+    src/app/service/selected-faculty.service.ts
+    src/app/model/student/study-program.model.ts
+    src/app/model/subject/course-realization.model.ts
+    src/app/model/university/university.model.ts
+    src/app/model/student/study-year.model.ts
+    src/app/service/question/question.service.ts
+    src/app/components/user-role-manager/user-role-manager.component.spec.ts
+    src/app/model/forum/forum.model.ts
+    src/app/service/question-resolver/question-resolver.service.spec.ts
+    src/app/service/loginService/login.service.spec.ts
+    src/app/components/university/university.component.ts
+    src/app/model/teaching/educational-goal.model.ts
+    src/app/components/profile/profile.component.spec.ts
+    src/app/components/generic-crud/generic-crud.component.ts
+    src/app/model/teaching/teacher-on-course.model.ts
+    src/app/service/question-control/question-control.service.ts
+    src/app/app.component.html
+    src/app/components/home/home.component.html
+    src/app/components/footer/footer.component.spec.ts
+    src/app/components/faculties/faculties.component.html
+    src/app/components/study-programs/study-programs.component.ts
+    src/app/components/faculty-detail/faculty-detail.component.css
+    src/app/model/users/administrator.model.ts
+    src/app/configurations/entity.config.ts
+    src/app/components/profile/profile.component.ts
+    src/app/model/message.model.ts
+    src/app/model/questions/question-textbox.ts
+    src/app/dynamic-components/dynamic-form-question/dynamic-form-question.component.spec.ts
+    src/app/components/footer/footer.component.ts
+    src/app/auth.interceptor.ts
+    src/app/components/faculties/faculties.component.ts
+    src/app/components/footer/footer.component.css
+    src/app/components/generic-crud/generic-crud.component.html
+    src/app/components/register/register.component.ts
+    src/app/components/admin-dashboard/admin-dashboard.component.spec.ts
+    src/app/components/faculty-detail/faculty-detail.component.ts
+    src/app/components/login/login.component.html
+    src/app/dynamic-components/generic-table/generic-table.component.html
+    src/app/auth.guard.ts
+    src/app/dynamic-components/view-table/view-table.component.html
+    src/app/model/file.model.ts
+    src/app/dynamic-components/view-table/view-table.component.css
+    src/app/model/university/faculty.model.ts
+    src/app/dynamic-components/dynamic-form/dynamic-form.component.html
+    src/app/model/forum/post.model.ts
+    src/app/directives/no-data.directive.spec.ts
+    src/app/components/admin-dashboard/admin-dashboard.component.ts
+    src/app/components/study-programs/study-programs.component.css
+    src/app/service/loginService/login.service.ts
+    src/app/components/login/login.component.ts
+    src/app/model/users/teacher.model.ts
+    src/app/model/teaching/evualuation-type.model.ts
+    src/app/model/address.model.ts
+    src/app/dynamic-components/dynamic-form-question/dynamic-form-question.component.html
+    src/app/service/dynamic-service/dynamic.service.spec.ts
+    src/app/components/profile/profile.component.html
+    src/app/model/users/student.model.ts
+    src/app/model/title/title.model.ts
+    src/app/model/teaching/teaching-material.model.ts
+
+Author: Rastko
+    src/app/components/sluzba-dashboard/sluzba-dashboard.component.html
+    src/app/components/student-exam-registration/student-exam-registration.component.spec.ts
+    src/app/components/student-exam-registration/student-exam-registration.component.css
+    src/app/components/student-dashboard/student-dashboard.component.ts
+    src/app/components/student-announcements/student-announcements.component.spec.ts
+    src/app/configurations/entity.config.ts
+    src/app/components/sluzba-dashboard/sluzba-dashboard.component.css
+    src/app/app.routes.ts
+    src/app/service/loginService/login.service.ts
+    src/app/components/nastavnik-dashboard/nastavnik-dashboard.component.ts
+    src/app/components/nastavnik-dashboard/nastavnik-dashboard.component.html
+    src/app/components/student-study-history/student-study-history.component.spec.ts
+    src/app/components/student-study-history/student-study-history.component.css
+    src/app/components/student-exam-registration/student-exam-registration.component.ts
+    src/app/components/student-courses/student-courses.component.css
+    src/app/components/student-study-history/student-study-history.component.html
+    src/app/components/student-dashboard/student-dashboard.component.html
+    src/app/components/student-courses/student-courses.component.ts
+    src/app/components/student-courses/student-courses.component.html
+    src/app/components/student-announcements/student-announcements.component.ts
+    src/app/components/student-announcements/student-announcements.component.css
+    proxy.conf.json
+    src/app/components/sluzba-dashboard/sluzba-dashboard.component.ts
+    src/app/components/student-dashboard/student-dashboard.component.css
+    angular.json
+    src/app/components/student-courses/student-courses.component.spec.ts
+    src/app/components/navbar/navbar.component.ts
+    src/app/components/nastavnik-dashboard/nastavnik-dashboard.component.css
+    src/app/components/student-study-history/student-study-history.component.ts
+    src/app/components/student-announcements/student-announcements.component.html
+    src/app/components/navbar/navbar.component.html
+    src/app/components/student-exam-registration/student-exam-registration.component.html
+
+Author: mihajlosvrkota
+    src/app/components/faculties/faculties.component.ts
+    src/app/configurations/entity.config.ts
+    src/app/service/question/question.service.ts
+
+Author: Mihajlo
+    src/app/components/nastavnik-schedule/nastavnik-schedule.component.html
+    src/app/components/nastavnik-studentlist/nastavnik-studentlist.component.html
+    src/app/components/nastavnik-subjects/nastavnik-subjects.component.ts
+    src/app/components/nastavnik-subjects/nastavnik-subjects.component.css
+    src/app/components/nastavnik-sylabus/nastavnik-sylabus.component.spec.ts
+    src/app/components/nastavnik-studentlist/nastavnik-studentlist.component.css
+    src/app/components/nastavnik-grading/nastavnik-grading.component.css
+    src/app/components/nastavnik-announcements/nastavnik-announcements.component.spec.ts
+    src/app/app.routes.ts
+    src/app/components/nastavnik-subjects/nastavnik-subjects.component.spec.ts
+    src/app/components/nastavnik-studentlist/nastavnik-studentlist.component.spec.ts
+    src/app/components/nastavnik-grading/nastavnik-grading.component.spec.ts
+    src/app/components/nastavnik-evaluationtypes/nastavnik-evaluationtypes.component.css
+    src/app/components/nastavnik-dashboard/nastavnik-dashboard.component.ts
+    src/app/components/nastavnik-dashboard/nastavnik-dashboard.component.html
+    src/app/components/nastavnik-sylabus/nastavnik-sylabus.component.ts
+    src/app/components/nastavnik-evaluationtypes/nastavnik-evaluationtypes.component.ts
+    src/app/components/nastavnik-schedule/nastavnik-schedule.component.spec.ts
+    src/app/components/nastavnik-grading/nastavnik-grading.component.ts
+    src/app/components/nastavnik-evaluationtypes/nastavnik-evaluationtypes.component.html
+    src/app/components/nastavnik-announcements/nastavnik-announcements.component.html
+    src/app/components/nastavnik-studentlist/nastavnik-studentlist.component.ts
+    src/app/components/nastavnik-evaluationtypes/nastavnik-evaluationtypes.component.spec.ts
+    src/app/components/nastavnik-announcements/nastavnik-announcements.component.css
+    src/app/components/nastavnik-announcements/nastavnik-announcements.component.ts
+    src/app/components/nastavnik-dashboard/nastavnik-dashboard.component.css
+    src/app/components/navbar/navbar.component.ts
+    src/app/components/nastavnik-sylabus/nastavnik-sylabus.component.css
+    src/app/components/nastavnik-schedule/nastavnik-schedule.component.ts
+    src/app/components/nastavnik-sylabus/nastavnik-sylabus.component.html
+    src/app/components/nastavnik-schedule/nastavnik-schedule.component.css
+    src/app/components/nastavnik-grading/nastavnik-grading.component.html
+    src/app/service/dynamic-service/dynamic.service.ts
+    frontend-src.zip
+    src/app/components/nastavnik-subjects/nastavnik-subjects.component.html
+
+Author: igor
+    tsconfig.spec.json
+    tsconfig.app.json
+    src/app/app.component.spec.ts
+    src/app/app.config.ts
+    .vscode/launch.json
+    src/app/app.routes.ts
+    src/app/app.component.ts
+    src/app/app.component.css
+    .vscode/extensions.json
+    public/favicon.ico
+    src/main.ts
+    src/styles.css
+    src/index.html
+    README.md
+    package.json
+    package-lock.json
+    angular.json
+    .vscode/tasks.json
+    .gitignore
+    tsconfig.json
+    .editorconfig
+    src/app/app.component.html
+

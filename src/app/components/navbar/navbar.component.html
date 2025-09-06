@@ -1,0 +1,27 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <a routerLink="/" class="brand">LMS</a>
+    <a routerLink="/university" class="nav-link">University</a>
+    <a routerLink="/faculty" class="nav-link">Faculties</a>
+    <a *ngIf="selectedFaculty" [routerLink]="['/faculty', selectedFaculty, 'studyProgram']" class="nav-link">
+      Study Programs
+    </a>
+  </div>
+
+  <div class="navbar-right">
+    <ng-container *ngIf="!isLoggedIn">
+      <a routerLink="/login" class="nav-link">Login</a>
+      <a routerLink="/register" class="nav-link">Register</a>
+    </ng-container>
+
+    <ng-container *ngIf="isLoggedIn">
+      <a *ngIf="isAdmin" routerLink="/admin-dashboard" class="nav-link">Admin Dashboard</a>
+      <a *ngIf="isStudent" routerLink="/student-dashboard" class="nav-link">Student Dashboard</a>
+      <a *ngIf="isNastavnik" routerLink="/nastavnik-dashboard" class="nav-link">Nastavnik Dashboard</a>
+      <a *ngIf="isSluzba" routerLink="/sluzba-dashboard" class="nav-link">Sluzba Dashboard</a>
+      <a routerLink="/profile" class="nav-link">My Profile</a>
+      <button (click)="logout()" class="nav-link btn-link">Logout</button>
+    </ng-container>
+  </div>
+</nav>
+

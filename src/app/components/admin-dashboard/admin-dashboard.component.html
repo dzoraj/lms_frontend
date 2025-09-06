@@ -1,0 +1,23 @@
+<div class="dashboard-container">
+  <app-navbar></app-navbar>
+  <h1>Admin Dashboard</h1>
+
+  <div class="grid">
+    <a
+      class="dashboard-card"
+      *ngFor="let key of entityKeys"
+      [routerLink]="['/admin-dashboard', getEndpoint(key)]"
+    >
+      {{ getTitle(key) }}
+    </a>
+  </div>
+
+  <div class="role-toggle">
+    <button (click)="toggleRoleManager()">
+      {{ showUserRoleManager ? 'Hide' : 'Manage User Roles' }}
+    </button>
+      <a href="assets/db.png" target="_blank"><button>DATABASE PIC</button></a>
+  </div>
+
+  <app-user-role-manager *ngIf="showUserRoleManager"></app-user-role-manager>
+</div>

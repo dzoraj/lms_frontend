@@ -1,0 +1,17 @@
+
+<h2>Register</h2>
+
+<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+<div *ngIf="successMessage" class="success">{{ successMessage }}</div>
+<div>
+<app-dynamic-form
+  [questions]="questions"
+  (submitEvent)="onSubmit($event)"
+  
+></app-dynamic-form>
+  <p class="mt-3">
+    Already have an account? <a style=" cursor: pointer;
+      color: blue;" (click)="goToLogin()" >Login here</a>.
+  </p>
+</div>
+<button (click)="onBack()">BACK TO HOMEPAGE</button>
