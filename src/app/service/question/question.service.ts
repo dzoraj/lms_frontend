@@ -2,14 +2,20 @@ import { Injectable } from '@angular/core';
 import { DropdownQuestion } from '../../model/questions/question-dropdown';
 import { QuestionBase } from '../../model/questions/question-base';
 import { TextboxQuestion } from '../../model/questions/question-textbox';
-import { Observable, of } from 'rxjs';
+import { forkJoin, map, Observable, of } from 'rxjs';
 import { Teacher } from '../../model/users/teacher.model';
 import { University } from '../../model/university/university.model';
+import { DynamicService } from '../dynamic-service/dynamic.service';
 @Injectable()
 export class QuestionService {
+
+  constructor(private dynamicService: DynamicService) { }
+
+  private mapToOptions<T>(array: T[], idKey: keyof T, nameKey: keyof T) {
+    return array.map(item => ({ id: item[idKey], naziv: item[nameKey] }));
+  }
   getLoginQuestions() {
     const questions: QuestionBase<string>[] = [
-      // login i register rade normalno
       new TextboxQuestion({
         key: "email",
         label: "Email",
@@ -26,45 +32,64 @@ export class QuestionService {
     return of(questions.sort((a, b) => a.order - b.order));;
   }
   getRegisterQuestions(): Observable<QuestionBase<string>[]> {
-  return of([
-    new TextboxQuestion({
-      key: 'email',
-      label: 'Email',
-      type: 'email',
-      required: true,
-      order: 1,
+    return of([
+      new TextboxQuestion({
+        key: 'email',
+        label: 'Email',
+        type: 'email',
+        required: true,
+        order: 1,
 
+      }),
+      new TextboxQuestion({
+        key: 'name',
+        label: 'Name',
+        type: 'text',
+        required: true,
+        order: 2,
+      }),
+      new TextboxQuestion({
+        key: 'jmbg',
+        label: 'JMBG. If no JMBG, leave empty',
+        type: 'text',
+        order: 3,
+        validators: ['minLength:13', 'maxLength:13', 'pattern:^\\d{13}$'],
+      }),
+      new TextboxQuestion({
+        key: 'password',
+        label: 'Password',
+        type: 'password',
+        required: true,
+        order: 4,
+        validators: ['required', 'minLength:6'],
+      }),
+      new TextboxQuestion({
+        key: 'confirmPassword',
+        label: 'Confirm Password',
+        type: 'password',
+        required: true,
+        order: 5,
+        validators: ['required', 'minLength:6', 'match:password'],
+      }),
+    ].sort((a, b) => a.order - b.order));
+  }
+
+
+getUserQuestions() {
+  const questions: QuestionBase<string>[] = [
+    new TextboxQuestion({ key: 'id', type: 'hidden' }),
+    new TextboxQuestion({ key: 'name', label: 'Name', required: true }),
+    new TextboxQuestion({ 
+      key: 'jmbg', 
+      label: 'JMBG',  
     }),
-    new TextboxQuestion({
-      key: 'password',
-      label: 'Password',
-      type: 'password',
-      required: true,
-      order: 2,
-      validators: ['required', 'minLength:6'],
-    }),
-    new TextboxQuestion({
-      key: 'confirmPassword',
-      label: 'Confirm Password',
-      type: 'password',
-      required: true,
-      order: 3,
-      validators: ['required', 'minLength:6', 'match:password'], 
-    }),
-  ].sort((a, b) => a.order - b.order));
+    new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
+    new TextboxQuestion({ key: 'password', label: 'Password', required: true })
+  ];
+
+  return of(questions.sort((a, b) => a.order - b.order));
 }
 
-  
-
-   getUserQuestions() { 
-    const questions: QuestionBase<string>[] = [
-      // radi normalno
-      new TextboxQuestion({ key: 'id', type: 'hidden' }),
-      new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
-      new TextboxQuestion({ key: 'password', label: 'Password', required: true })
-    ];
-    return of(questions.sort((a, b) => a.order - b.order));
-  }
   getRegisteredUserQuestions() {
     const questions: QuestionBase<string>[] = [
       // prikazuje registered usere normalno, ali ne može da ih doda
@@ -78,7 +103,6 @@ export class QuestionService {
       // prikazuje normalno ali ne kreira studenta, valjda zato što nema selekciju za adresu?
       new TextboxQuestion({ key: 'id', type: 'hidden' }),
       new TextboxQuestion({ key: 'name', label: 'Name', required: true }),
-      new TextboxQuestion({ key: 'jmbg', label: 'JMBG', required: true }),
       new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
       new TextboxQuestion({ key: 'password', label: 'Password', required: true })
     ];
@@ -96,7 +120,6 @@ export class QuestionService {
 
   getRoleQuestions() {
     const questions: QuestionBase<string>[] = [
-      // ovaj radi ko podmazan
       new TextboxQuestion({ key: 'id', type: 'hidden' }),
       new TextboxQuestion({ key: 'name', label: 'Role Name', required: true })
     ];
@@ -137,44 +160,44 @@ export class QuestionService {
     ];
     return of(questions.sort((a, b) => a.order - b.order));
   }
-    getNotificationQuestions() {
-      const questions: QuestionBase<string>[] = [
-        // izmenio requestMapping na backendu na /api/notification, jos uvek daje 403 gresku, valjda nije implementiran
-        // isto nedostaje Attachments question
-        new TextboxQuestion({
-          key: 'id',
-          type: 'hidden'
-        }),
-        new TextboxQuestion({
-          key: 'title',
-          label: 'Title',
-          required: true
-        }),
-        new TextboxQuestion({
-          key: 'content',
-          label: 'Content',
-          required: true
-        }),
-        new TextboxQuestion({
-          key: 'timePosted',
-          label: 'Time Posted',
-          type: 'datetime-local',
-          required: true
-        }),
-        new DropdownQuestion({
-          key: 'courseRealization',
-          label: 'Course Realization',
-          options: []
-        }),
-        new DropdownQuestion({
-          key: 'teacherOnCourse',
-          label: 'Teacher on Course',
-          options: []
-        })
-      ];
-      return of(questions.sort((a, b) => a.order - b.order));
-    }
-  
+  getNotificationQuestions() {
+    const questions: QuestionBase<string>[] = [
+      // izmenio requestMapping na backendu na /api/notification, jos uvek daje 403 gresku, valjda nije implementiran
+      // isto nedostaje Attachments question
+      new TextboxQuestion({
+        key: 'id',
+        type: 'hidden'
+      }),
+      new TextboxQuestion({
+        key: 'title',
+        label: 'Title',
+        required: true
+      }),
+      new TextboxQuestion({
+        key: 'content',
+        label: 'Content',
+        required: true
+      }),
+      new TextboxQuestion({
+        key: 'timePosted',
+        label: 'Time Posted',
+        type: 'datetime-local',
+        required: true
+      }),
+      new DropdownQuestion({
+        key: 'courseRealization',
+        label: 'Course Realization',
+        options: []
+      }),
+      new DropdownQuestion({
+        key: 'teacherOnCourse',
+        label: 'Teacher on Course',
+        options: []
+      })
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+
   getAddressQuestions() {
     const questions: QuestionBase<string>[] = [
       // nešto nije u redu sa prikazom adrese
@@ -263,468 +286,447 @@ export class QuestionService {
     return of(questions.sort((a, b) => a.order - b.order));
   }
   getTitleTypeQuestions() {
-  const questions: QuestionBase<string>[] = [
-    // ovaj isto ne radi, jer ne prikazuje ove opcije za related title
-    // takodje ne daje 403 gresku
-    new TextboxQuestion({
-      key: 'id',
-      type: 'hidden'
-    }),
-    new TextboxQuestion({
-      key: 'name',
-      label: 'Title Name',
-      required: true
-    }),
-    new DropdownQuestion({
-      key: 'title',
-      label: 'Related Title',
-      options: []
-    })
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getScientificFieldQuestions() {
-  const questions: QuestionBase<string>[] = [
-    // isto kao prethodno, ne radi jer ne prikazuje associated title
-    // takodje ne prikazuje 403 grešku otkad sam izmenio URI na backendu
-    new TextboxQuestion({
-      key: 'id',
-      type: 'hidden'
-    }),
-    new TextboxQuestion({
-      key: 'name',
-      label: 'Scientific Field Name',
-      required: true
-    }),
-    new DropdownQuestion({
-      key: 'title',
-      label: 'Associated Title',
-      options: []
-    })
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getUserOnForumQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // jednostavno ne radi
-    // barem ne prikazuje 403 grešku
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getTopicQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // prođe kroz kreiranje topica, ali ne prikazuje, pretpostavljam da ga uopšte ne kreira
-    // takodje ne prikazuje 403
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-    new TextboxQuestion({ key: 'name', label: 'Topic Name', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getForumQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // isto kao prethodno, prođe ali ne prikaže
-    // takodje ne prikazuje 403
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-    new TextboxQuestion({ key: 'javni', label: 'Is Public', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getPostQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // pretpostavljam da ova pitanja za forum ne rade jer nismo još implementirali nikakav forum
-    // takodje ne prikazuje 403
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-    new TextboxQuestion({ key: 'postingTime', label: 'Posting Time', required: true }),
-    new TextboxQuestion({ key: 'content', label: 'Content', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getFileQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // prođe kroz kreaciju fajla, ne prikaže u tabeli, valjda isto kao forum i topic
-    // takodje ne prikazuje 403
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-    new TextboxQuestion({ key: 'description', label: 'Description', required: true }),
-    new TextboxQuestion({ key: 'url', label: 'File URL', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getStudyProgramQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // više ne prikazuje 403 grešku ali ne radi
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-    new TextboxQuestion({ key: 'name', label: 'Program Name', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getStudyYearQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // isto kao prethodno
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-    new TextboxQuestion({ key: 'enrollmentDate', label: 'Enrollment Date', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getStudentInYearQuestions() {
-  const questions: QuestionBase<any>[] = [
-    // ne radi, ne prijavljuje 403 gresku
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
-    new TextboxQuestion({ key: 'enrollmentDate', label: 'Enrollment Date', required: true }),
-    new TextboxQuestion({ key: 'indexNumber', label: 'Index Number', required: true }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
+    const questions: QuestionBase<string>[] = [
+      // ovaj isto ne radi, jer ne prikazuje ove opcije za related title
+      // takodje ne daje 403 gresku
+      new TextboxQuestion({
+        key: 'id',
+        type: 'hidden'
+      }),
+      new TextboxQuestion({
+        key: 'name',
+        label: 'Title Name',
+        required: true
+      }),
+      new DropdownQuestion({
+        key: 'title',
+        label: 'Related Title',
+        options: []
+      })
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getScientificFieldQuestions() {
+    const questions: QuestionBase<string>[] = [
+      // isto kao prethodno, ne radi jer ne prikazuje associated title
+      // takodje ne prikazuje 403 grešku otkad sam izmenio URI na backendu
+      new TextboxQuestion({
+        key: 'id',
+        type: 'hidden'
+      }),
+      new TextboxQuestion({
+        key: 'name',
+        label: 'Scientific Field Name',
+        required: true
+      }),
+      new DropdownQuestion({
+        key: 'title',
+        label: 'Associated Title',
+        options: []
+      })
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getUserOnForumQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // jednostavno ne radi
+      // barem ne prikazuje 403 grešku
+      new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getTopicQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // prođe kroz kreiranje topica, ali ne prikazuje, pretpostavljam da ga uopšte ne kreira
+      // takodje ne prikazuje 403
+      new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
+      new TextboxQuestion({ key: 'name', label: 'Topic Name', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getForumQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // isto kao prethodno, prođe ali ne prikaže
+      // takodje ne prikazuje 403
+      new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
+      new TextboxQuestion({ key: 'javni', label: 'Is Public', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getPostQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // pretpostavljam da ova pitanja za forum ne rade jer nismo još implementirali nikakav forum
+      // takodje ne prikazuje 403
+      new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden'}),
+      new TextboxQuestion({ key: 'postingTime', label: 'Posting Time', required: true }),
+      new TextboxQuestion({ key: 'content', label: 'Content', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getFileQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // prođe kroz kreaciju fajla, ne prikaže u tabeli, valjda isto kao forum i topic
+      // takodje ne prikazuje 403
+      new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden' }),
+      new TextboxQuestion({ key: 'description', label: 'Description', required: true }),
+      new TextboxQuestion({ key: 'url', label: 'File URL', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getStudyProgramQuestions() {
+    const questions: QuestionBase<any>[] = [
+      new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden'}),
+      new TextboxQuestion({ key: 'name', label: 'Program Name', required: true }),
+      new TextboxQuestion({ key: 'leaderId', label: 'Leader ID', required: true }),
+      new TextboxQuestion({ key: 'FacultyId', label: 'Faculty ID', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getStudyYearQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // isto kao prethodno
+      new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden'}),
+      new TextboxQuestion({ key: 'enrollmentDate', label: 'Enrollment Date', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getStudentInYearQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // ne radi, ne prijavljuje 403 gresku
+      new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden' }),
+      new TextboxQuestion({ key: 'enrollmentDate', label: 'Enrollment Date', required: true }),
+      new TextboxQuestion({ key: 'indexNumber', label: 'Index Number', required: true }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
   getTeacherQuestions() {
     const questions: QuestionBase<string>[] = [
       // prikazuje teachere normalno, ali ih ne kreira, valjda zato što nema polje za adresu
       new TextboxQuestion({ key: 'id', type: 'hidden' }),
       new TextboxQuestion({ key: 'name', label: 'Name', required: true }),
       new TextboxQuestion({ key: 'biography', label: 'Biography' }),
-      new TextboxQuestion({ key: 'jmbg', label: 'JMBG', required: true }),
       new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
       new TextboxQuestion({ key: 'password', label: 'Password', required: true })
     ];
     return of(questions.sort((a, b) => a.order - b.order));
-  }  
-
-getFacultyQuestions(context: { teachers?: Teacher[], universities?: University[] } = {}): QuestionBase<any>[] {
-  const teachers = context.teachers || [];
-  const universities = context.universities || [];
-
-  return [
-    new QuestionBase({
-      key: 'id', type: 'hidden', controlType: 'textbox'
-    }),
-    new QuestionBase({
-      key: 'name', label: 'Faculty Name', required: true, controlType: 'textbox'
-    }),
-    new QuestionBase({
-      key: 'dean', label: 'Dean', controlType: 'dropdown',
-      options: teachers.map(t => ({ id: t.id!, naziv: t.name ?? 'Unknown' }))
-    }),
-    new QuestionBase({
-      key: 'university', label: 'University', controlType: 'dropdown',
-      options: universities.map(u => ({ id: u.id!, naziv: u.name ?? 'Unknown' }))
-    }),
-    new QuestionBase({
-      key: 'addresses', label: 'Addresses', controlType: 'textbox'
-    }),
-  ];
-}
-
-
-
-    getUniversityQuestions(universities: University[] = []): QuestionBase<any>[] {
-      const questions: QuestionBase<any>[] = [
-        new TextboxQuestion({ key: 'id', label: 'ID', required: false }),
-        new TextboxQuestion({ key: 'name', label: 'University Name', required: true }),
-        new TextboxQuestion({ key: 'establishmentDate', label: 'Establishment Date', type: 'date', required: false }),
-
-        new DropdownQuestion({
-          key: 'someOptionalField',
-          label: 'Optional Dropdown',
-          required: false,
-          options: universities.map(u => ({
-            id: u.id!,
-            naziv: u.name ?? 'Unknown'
-          }))
-        })
-      ];
-
-      return questions.sort((a, b) => a.order - b.order);
-    }
-
-
-getCourseRealizationQuestions() {
+  }
+getFacultyQuestions() {
   const questions: QuestionBase<any>[] = [
-    // ne radi, ali ne prijavljuje 403 forbidden
-    new TextboxQuestion({ key: 'id', label: 'ID', required: true }),
+    new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden' }),
+    new TextboxQuestion({ key: 'name', label: 'Faculty Name', required: true }),
+    new TextboxQuestion({ key: 'dean', label: 'Dean', required: true,type: 'number' }),
+    new DropdownQuestion({ key: 'university', label: 'University', type:'number',options: [] })
   ];
   return of(questions.sort((a, b) => a.order - b.order));
 }
 
-getCourseAttendanceQuestions() {
-  const questions: QuestionBase<string>[] = [
-    // nece raditi jer ne prikazuje studente, takodje nema 403 forbidden
-    new TextboxQuestion({
-      key: 'id',
-      label: 'ID',
-      type: 'hidden',
-    }),
-    new TextboxQuestion({
-      key: 'konacnaOcena',
-      label: 'Final Grade',
-      type: 'number',
-      required: false,
-      min: '0',
-      max: '10',
-    }),
-    new DropdownQuestion({
-      key: 'courseRealization',
-      label: 'Course Realization',
-      options: [], // fill with {id, naziv} from data source
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'student',
-      label: 'Student',
-      options: [], // fill with {id, naziv} from data source
-      required: false,
-    }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getLearningOutcomeQuestions() {
-  const questions: QuestionBase<string>[] = [
-    // nece raditi isto kao ovo prethodno, ali ne prjavljuje 403 gresku
-    new TextboxQuestion({
-      key: 'id',
-      label: 'ID',
-      type: 'hidden',
-    }),
-    new TextboxQuestion({
-      key: 'description',
-      label: 'Description',
-      type: 'text',
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'subject',
-      label: 'Subject',
-      options: [], // fill with {id, naziv} from your subjects data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'educationalGoals',
-      label: 'Educational Goals',
-      options: [], // multi-select ideally, but dropdown placeholder here
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'teachingMaterials',
-      label: 'Teaching Materials',
-      options: [],
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'knowledgeEvaluations',
-      label: 'Knowledge Evaluations',
-      options: [],
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'teachingSessions',
-      label: 'Teaching Sessions',
-      options: [],
-      required: false,
-    }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getSubjectQuestions() {
-  const questions: QuestionBase<string>[] = [
-    new TextboxQuestion({
-      key: 'id',
-      label: 'ID',
-      type: 'hidden',
-    }),
-    new TextboxQuestion({
-      key: 'name',
-      label: 'Subject Name',
-      type: 'text',
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'espb',
-      label: 'ESPB',
-      type: 'number',
-      required: false,
-      min: '0',
-      max: '60',
-    }),
-    new DropdownQuestion({
-      key: 'mandatory',
-      label: 'Mandatory',
-      options: [
-        { id: 1, naziv: 'Yes' },
-        { id: 0, naziv: 'No' },
-      ],
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'lectureCount',
-      label: 'Lecture Count',
-      type: 'number',
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'labCount',
-      label: 'Lab Count',
-      type: 'number',
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'otherTeachingForms',
-      label: 'Other Teaching Forms',
-      type: 'number',
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'researchWork',
-      label: 'Research Work',
-      type: 'number',
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'otherClasses',
-      label: 'Other Classes',
-      type: 'number',
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'studyYear',
-      label: 'Study Year',
-      options: [], // fill from StudyYear data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'syllabus',
-      label: 'Syllabus (Learning Outcomes)',
-      options: [], // fill from LearningOutcome data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'subSubjects',
-      label: 'Sub Subjects',
-      options: [], // fill from Subject data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'parentSubject',
-      label: 'Parent Subject',
-      options: [], // fill from Subject data
-      required: false,
-    }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getEducationalGoalQuestions() {
-  const questions: QuestionBase<string>[] = [
-    new TextboxQuestion({
-      key: 'id',
-      label: 'ID',
-      type: 'hidden',
-    }),
-    new TextboxQuestion({
-      key: 'description',
-      label: 'Description',
-      type: 'text',
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'learningOutcomes',
-      label: 'Learning Outcomes',
-      options: [], // fill from LearningOutcome data
-      required: false,
-    }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getKnowledgeEvaluationQuestions() {
-  const questions: QuestionBase<string>[] = [
-    new TextboxQuestion({
-      key: 'id',
-      label: 'ID',
-      type: 'hidden',
-    }),
-    new TextboxQuestion({
-      key: 'startTime',
-      label: 'Start Time',
-      type: 'datetime-local',
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'endTime',
-      label: 'End Time',
-      type: 'datetime-local',
-      required: false,
-    }),
-    new TextboxQuestion({
-      key: 'points',
-      label: 'Points',
-      type: 'number',
-      required: false,
-      min: '0',
-    }),
-    new DropdownQuestion({
-      key: 'evaluationInstrument',
-      label: 'Evaluation Instrument',
-      options: [], // fill from EvaluationInstrument data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'evaluationType',
-      label: 'Evaluation Type',
-      options: [], // fill from EvaluationType data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'courseRealization',
-      label: 'Course Realization',
-      options: [], // fill from CourseRealization data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'learningOutcomes',
-      label: 'Learning Outcomes',
-      options: [], // fill from LearningOutcome data
-      required: false,
-    }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
-getTeacherOnCourseQuestions() {
-  const questions: QuestionBase<string>[] = [
-    new TextboxQuestion({
-      key: 'id',
-      label: 'ID',
-      type: 'hidden',
-    }),
-    new TextboxQuestion({
-      key: 'numberOfClasses',
-      label: 'Number of Classes',
-      type: 'number',
-      required: false,
-      min: '0',
-    }),
-    new DropdownQuestion({
-      key: 'teacher',
-      label: 'Teacher',
-      options: [], // fill from Teacher data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'teachingType',
-      label: 'Teaching Type',
-      options: [], // fill from TeachingType data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'courseRealization',
-      label: 'Course Realization',
-      options: [], // fill from CourseRealization data
-      required: false,
-    }),
-    new DropdownQuestion({
-      key: 'notifications',
-      label: 'Notifications',
-      options: [], // fill from Notification data
-      required: false,
-    }),
-  ];
-  return of(questions.sort((a, b) => a.order - b.order));
-}
+
+
+
+  getUniversityQuestions(): Observable<QuestionBase<any>[]> {
+    return of([
+      new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden' }),
+      new TextboxQuestion({ key: 'name', label: 'University Name', required: true }),
+      new TextboxQuestion({
+        key: 'establishmentDate',
+        label: 'Establishment Date',
+        type: 'date',
+        required: false
+      })
+    ].sort((a, b) => a.order - b.order));
+  }
+
+
+
+  getCourseRealizationQuestions() {
+    const questions: QuestionBase<any>[] = [
+      // ne radi, ali ne prijavljuje 403 forbidden
+      new TextboxQuestion({ key: 'id', label: 'ID', type: 'hidden'}),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+
+  getCourseAttendanceQuestions() {
+    const questions: QuestionBase<string>[] = [
+      // nece raditi jer ne prikazuje studente, takodje nema 403 forbidden
+      new TextboxQuestion({
+        key: 'id',
+        label: 'ID',
+        type: 'hidden',
+      }),
+      new TextboxQuestion({
+        key: 'konacnaOcena',
+        label: 'Final Grade',
+        type: 'number',
+        required: false,
+        min: '0',
+        max: '10',
+      }),
+      new DropdownQuestion({
+        key: 'courseRealization',
+        label: 'Course Realization',
+        options: [], // fill with {id, naziv} from data source
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'student',
+        label: 'Student',
+        options: [], // fill with {id, naziv} from data source
+        required: false,
+      }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getLearningOutcomeQuestions() {
+    const questions: QuestionBase<string>[] = [
+      // nece raditi isto kao ovo prethodno, ali ne prjavljuje 403 gresku
+      new TextboxQuestion({
+        key: 'id',
+        label: 'ID',
+        type: 'hidden',
+      }),
+      new TextboxQuestion({
+        key: 'description',
+        label: 'Description',
+        type: 'text',
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'subject',
+        label: 'Subject',
+        options: [], // fill with {id, naziv} from your subjects data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'educationalGoals',
+        label: 'Educational Goals',
+        options: [], // multi-select ideally, but dropdown placeholder here
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'teachingMaterials',
+        label: 'Teaching Materials',
+        options: [],
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'knowledgeEvaluations',
+        label: 'Knowledge Evaluations',
+        options: [],
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'teachingSessions',
+        label: 'Teaching Sessions',
+        options: [],
+        required: false,
+      }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getSubjectQuestions() {
+    const questions: QuestionBase<string>[] = [
+      new TextboxQuestion({
+        key: 'id',
+        label: 'ID',
+        type: 'hidden',
+      }),
+      new TextboxQuestion({
+        key: 'name',
+        label: 'Subject Name',
+        type: 'text',
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'espb',
+        label: 'ESPB',
+        type: 'number',
+        required: false,
+        min: '0',
+        max: '60',
+      }),
+      new DropdownQuestion({
+        key: 'mandatory',
+        label: 'Mandatory',
+        options: [
+          { id: 1, naziv: 'Yes' },
+          { id: 0, naziv: 'No' },
+        ],
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'lectureCount',
+        label: 'Lecture Count',
+        type: 'number',
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'labCount',
+        label: 'Lab Count',
+        type: 'number',
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'otherTeachingForms',
+        label: 'Other Teaching Forms',
+        type: 'number',
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'researchWork',
+        label: 'Research Work',
+        type: 'number',
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'otherClasses',
+        label: 'Other Classes',
+        type: 'number',
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'studyYear',
+        label: 'Study Year',
+        options: [], // fill from StudyYear data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'syllabus',
+        label: 'Syllabus (Learning Outcomes)',
+        options: [], // fill from LearningOutcome data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'subSubjects',
+        label: 'Sub Subjects',
+        options: [], // fill from Subject data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'parentSubject',
+        label: 'Parent Subject',
+        options: [], // fill from Subject data
+        required: false,
+      }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getEducationalGoalQuestions() {
+    const questions: QuestionBase<string>[] = [
+      new TextboxQuestion({
+        key: 'id',
+        label: 'ID',
+        type: 'hidden',
+      }),
+      new TextboxQuestion({
+        key: 'description',
+        label: 'Description',
+        type: 'text',
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'learningOutcomes',
+        label: 'Learning Outcomes',
+        options: [], // fill from LearningOutcome data
+        required: false,
+      }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getKnowledgeEvaluationQuestions() {
+    const questions: QuestionBase<string>[] = [
+      new TextboxQuestion({
+        key: 'id',
+        label: 'ID',
+        type: 'hidden',
+      }),
+      new TextboxQuestion({
+        key: 'startTime',
+        label: 'Start Time',
+        type: 'datetime-local',
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'endTime',
+        label: 'End Time',
+        type: 'datetime-local',
+        required: false,
+      }),
+      new TextboxQuestion({
+        key: 'points',
+        label: 'Points',
+        type: 'number',
+        required: false,
+        min: '0',
+      }),
+      new DropdownQuestion({
+        key: 'evaluationInstrument',
+        label: 'Evaluation Instrument',
+        options: [], // fill from EvaluationInstrument data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'evaluationType',
+        label: 'Evaluation Type',
+        options: [], // fill from EvaluationType data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'courseRealization',
+        label: 'Course Realization',
+        options: [], // fill from CourseRealization data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'learningOutcomes',
+        label: 'Learning Outcomes',
+        options: [], // fill from LearningOutcome data
+        required: false,
+      }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
+  getTeacherOnCourseQuestions() {
+    const questions: QuestionBase<string>[] = [
+      new TextboxQuestion({
+        key: 'id',
+        label: 'ID',
+        type: 'hidden',
+      }),
+      new TextboxQuestion({
+        key: 'numberOfClasses',
+        label: 'Number of Classes',
+        type: 'number',
+        required: false,
+        min: '0',
+      }),
+      new DropdownQuestion({
+        key: 'teacher',
+        label: 'Teacher',
+        options: [], // fill from Teacher data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'teachingType',
+        label: 'Teaching Type',
+        options: [], // fill from TeachingType data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'courseRealization',
+        label: 'Course Realization',
+        options: [], // fill from CourseRealization data
+        required: false,
+      }),
+      new DropdownQuestion({
+        key: 'notifications',
+        label: 'Notifications',
+        options: [], // fill from Notification data
+        required: false,
+      }),
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
 
   getEvaluationAttemptQuestions() {
     const questions: QuestionBase<any>[] = [

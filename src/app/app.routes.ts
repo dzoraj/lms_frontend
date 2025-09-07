@@ -72,11 +72,11 @@ export const routes: Routes = [
     import('./components/student-dashboard/student-dashboard.component').then(m => m.StudentDashboardComponent),
   },
   {
-  path: 'sluzba-dashboard',
+  path: 'sa-dashboard',
   canActivate: [authGuard],
-  data: { requiredRoles: ['ROLE_SLUZBA'] },
+  data: { requiredRoles: ['ROLE_SA'] },
   loadComponent: () =>
-    import('./components/sluzba-dashboard/sluzba-dashboard.component').then(m => m.SluzbaDashboardComponent),
+    import('./components/sa-dashboard/sa-dashboard.component').then(m => m.SaDashboardComponent),
   },
 
   {

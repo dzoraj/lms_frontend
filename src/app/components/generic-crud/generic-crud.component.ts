@@ -41,6 +41,7 @@ export class GenericCrudComponent<T> implements OnInit {
       this.questions = data['questions'] ?? [];
     });
   }
+  
 
   loadData() {
     if (!this.endpoint) return;

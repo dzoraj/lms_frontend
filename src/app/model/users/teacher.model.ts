@@ -5,7 +5,6 @@ import { Address } from '../address.model';
 
 export interface Teacher extends RegisteredUser {
   biography: string;
-  jmbg: string;
   titles: Title[];
   courses: TeacherOnCourse[];
   address: Address;

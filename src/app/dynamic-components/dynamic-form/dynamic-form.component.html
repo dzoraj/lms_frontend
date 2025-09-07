@@ -6,10 +6,14 @@
     <div *ngIf="(question.options?.length ?? 0) > 0">
       <label>{{ question.label }}</label>
       <select [formControlName]="question.key">
-        <option [value]="''" disabled selected>Select {{ question.label }}</option>
-        <option *ngFor="let opt of question.options" [value]="opt.id">{{ opt.naziv }}</option>
+        <option [ngValue]="null" disabled selected>Select {{ question.label }}</option>
+        <option *ngFor="let opt of question.options" [ngValue]="opt.id">
+          {{ opt.naziv }}
+        </option>
       </select>
     </div>
+
+
 
     <!-- Otherwise, show normal input -->
     <div *ngIf="!question.options || question.options.length === 0">

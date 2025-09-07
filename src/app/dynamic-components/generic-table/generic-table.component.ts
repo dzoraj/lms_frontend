@@ -22,12 +22,24 @@ export class GenericTableComponent implements OnChanges {
 
   sortDirections: { [key: string]: 'asc' | 'desc' } = {};
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['data'] && this.data && this.data.length > 0) {      
-      this.columns = Object.keys(this.data[0]).filter(key => key !== "id");
-      this.filteredData = [...this.data]; // initialize filtered data
-    } 
-  }
+ngOnChanges(changes: SimpleChanges) {
+  if (changes['data'] && this.data && this.data.length > 0) {
+    // Collect unique keys from all rows
+    const allKeys = new Set<string>();
+    this.data.forEach(row => {
+      Object.keys(row).forEach(k => {
+        if (k !== 'id') allKeys.add(k);
+      });
+    });
+
+    // Convert to array and sort alphabetically (or define your own fixed order)
+    this.columns = Array.from(allKeys).sort();
+
+    // Keep filtered data aligned
+    this.filteredData = [...this.data];
+  } 
+}
+
 
   getValue(row: any, column: string): any {
     const value = row[column];

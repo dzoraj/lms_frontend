@@ -183,13 +183,13 @@ Author: dzoraj
     src/app/model/teaching/teaching-material.model.ts
 
 Author: Rastko
-    src/app/components/sluzba-dashboard/sluzba-dashboard.component.html
+    src/app/components/sa-dashboard/sa-dashboard.component.html
     src/app/components/student-exam-registration/student-exam-registration.component.spec.ts
     src/app/components/student-exam-registration/student-exam-registration.component.css
     src/app/components/student-dashboard/student-dashboard.component.ts
     src/app/components/student-announcements/student-announcements.component.spec.ts
     src/app/configurations/entity.config.ts
-    src/app/components/sluzba-dashboard/sluzba-dashboard.component.css
+    src/app/components/sa-dashboard/sa-dashboard.component.css
     src/app/app.routes.ts
     src/app/service/loginService/login.service.ts
     src/app/components/nastavnik-dashboard/nastavnik-dashboard.component.ts
@@ -205,7 +205,7 @@ Author: Rastko
     src/app/components/student-announcements/student-announcements.component.ts
     src/app/components/student-announcements/student-announcements.component.css
     proxy.conf.json
-    src/app/components/sluzba-dashboard/sluzba-dashboard.component.ts
+    src/app/components/sa-dashboard/sa-dashboard.component.ts
     src/app/components/student-dashboard/student-dashboard.component.css
     angular.json
     src/app/components/student-courses/student-courses.component.spec.ts

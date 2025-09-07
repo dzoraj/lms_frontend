@@ -4,6 +4,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { QuestionControlService } from '../../service/question-control/question-control.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionBase } from '../../model/questions/question-base';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -18,6 +19,7 @@ export class DynamicFormComponent implements OnInit {
   @Output() submitEvent = new EventEmitter<any>();
 
   form!: FormGroup;
+opt: any;
 
   constructor(
     private qcs: QuestionControlService,
@@ -25,9 +27,13 @@ export class DynamicFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
-    this.buildForm();
+ngOnInit() {
+  if (this.questions instanceof Observable) {
+    this.questions.subscribe(qs => this.questions = qs);
   }
+  this.buildForm();
+}
+
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['model'] && !changes['model'].firstChange) {
@@ -37,6 +43,7 @@ export class DynamicFormComponent implements OnInit {
 
   buildForm() {
     this.form = this.qcs.toFormGroup(this.questions || [], this.model);
+      console.log(this.form.controls); // check all keys
   }
 
   onSubmit() {

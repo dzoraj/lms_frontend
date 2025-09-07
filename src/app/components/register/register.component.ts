@@ -40,6 +40,11 @@ export class RegisterComponent implements OnInit {
     if (model.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(model.email)) {
       confirm('Invalid email format! Please try again.');
       return;}
+    if (model.jmbg && !/^\d{13}$/.test(model.jmbg)) {
+      confirm('JMBG must be exactly 13 digits. Please try again.');
+      return;
+    }
+
 
 
     this.loginService.register(model).subscribe({
@@ -50,7 +55,7 @@ export class RegisterComponent implements OnInit {
         }, 2000);
       },
       error: (err) => {
-        this.errorMessage = 'Registration failed: ' + (err.error || 'Unknown error');
+        this.errorMessage = 'Registration failed: ' + (err.error || 'Email already in use or server error.');
         console.error('Register error:', err);
       },
     });
