@@ -43,7 +43,7 @@
             <h4>Notifications</h4>
             <ul class="notifications">
               <li *ngFor="let n of ca.courseRealization.notifications">
-                <div class="msg">{{ n.message }}</div>
+                <div class="msg">{{ n.content ?? n.message ?? '—' }}</div>
                 <div class="meta">{{ formatNotificationDate(n) }}</div>
               </li>
             </ul>
@@ -52,16 +52,16 @@
       </div>
     </section>
 
-    <section class="study-history">
-      <h3>Study history</h3>
-      <div *ngIf="!studyHistory?.length">No study history.</div>
+    <section class="study-history-meta">
+      <h3>Enrollment history</h3>
+      <div *ngIf="!studyHistory?.length">No enrollment history.</div>
 
       <table *ngIf="studyHistory?.length">
         <thead>
           <tr>
             <th>Index</th>
             <th>Enrollment</th>
-            <th>Study Year Id</th>
+            <th>Study Year</th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +69,32 @@
             <td>{{ s.indexNumber ?? '—' }}</td>
             <td>{{ s.enrollmentDate ?? '—' }}</td>
             <td>{{ s.studyYearId ?? '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="study-history-subjects">
+      <h3>Study history — subjects</h3>
+      <div *ngIf="!studyHistoryCourses?.length">No passed/attempted subjects.</div>
+
+      <table *ngIf="studyHistoryCourses?.length">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>ESPB</th>
+            <th>Attempts</th>
+            <th>Final Points</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let course of studyHistoryCourses">
+            <td>{{ course.subjectName ?? '—' }}</td>
+            <td>{{ course.espb ?? '—' }}</td>
+            <td>{{ course.attempts ?? '—' }}</td>
+            <td>{{ course.finalPoints ?? '—' }}</td>
+            <td>{{ course.finalGrade ?? '—' }}</td>
           </tr>
         </tbody>
       </table>

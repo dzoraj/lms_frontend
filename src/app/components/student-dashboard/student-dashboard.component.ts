@@ -1,4 +1,3 @@
-// src/app/student-dashboard/student-dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
@@ -16,9 +15,12 @@ import { NavbarComponent } from "../navbar/navbar.component";
 export class StudentDashboardComponent implements OnInit {
   studentDto: any | null = null;
   courseAttendances: any[] = [];
-  studyHistory: any[] = [];
+  studyHistory: any[] = [];            
+  studyHistoryCourses: any[] = [];     
   averageGrade: number | null = null;
   totalEspb: number = 0;
+  totalPoints: number = 0;
+
   loading = false;
   error: string | null = null;
 
@@ -40,25 +42,47 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   private loadDashboard(studentId: number): void {
-    this.loading = true;
-    this.error = null;
+  this.loading = true;
+  this.error = null;
 
-    this.dynamic.getById<any>(`students/dashboard`, studentId)
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: (dashboard) => {
-          this.studentDto = dashboard;
-          this.courseAttendances = dashboard?.currentCourses ?? [];
-          this.studyHistory = dashboard?.studyHistory ?? [];
-          this.averageGrade = dashboard?.averageGrade ?? null;
-          this.totalEspb = dashboard?.totalEcts ?? 0;
-        },
-        error: (err) => {
-          console.error('Failed to load student dashboard', err);
-          this.error = err?.error?.message || err?.message || 'Failed to load student dashboard';
+  this.dynamic.getById<any>(`students/dashboard`, studentId)
+    .pipe(finalize(() => (this.loading = false)))
+    .subscribe({
+      next: (dashboard) => {
+        console.log('Full dashboard payload:', dashboard);
+
+        this.studentDto = dashboard;
+        this.courseAttendances = dashboard?.currentCourses ?? [];
+        this.studyHistory = dashboard?.studyHistory ?? [];                  
+        this.studyHistoryCourses = dashboard?.studyHistoryCourses ?? [];   
+
+        if (dashboard?.averageGrade != null) {
+          this.averageGrade = dashboard.averageGrade;
+        } else {
+          const grades = this.studyHistoryCourses
+            .filter(s => s?.finalGrade != null)
+            .map(s => Number(s.finalGrade));
+          this.averageGrade = grades.length ? grades.reduce((a, b) => a + b, 0) / grades.length : null;
         }
-      });
-  }
+
+        if (dashboard?.totalEspb != null) {
+          this.totalEspb = dashboard.totalEspb;
+        } else {
+          this.totalEspb = this.studyHistoryCourses
+            .filter(s => s?.espb != null && s?.finalGrade != null)
+            .reduce((sum, s) => sum + (Number(s.espb) || 0), 0);
+        }
+
+        this.totalPoints = this.studyHistoryCourses
+          .filter(s => s?.finalPoints != null)
+          .reduce((sum, s) => sum + (Number(s.finalPoints) || 0), 0);
+      },
+      error: (err) => {
+        console.error('Failed to load student dashboard', err);
+        this.error = err?.error?.message || err?.message || 'Failed to load student dashboard';
+      }
+    });
+}
 
   registerExam(ca: any): void {
     if (!ca) return;
@@ -89,8 +113,10 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   formatNotificationDate(n: any): string {
-    if (!n || !n.date) return '';
-    const d = new Date(n.date);
-    return isNaN(d.getTime()) ? n.date : d.toLocaleString();
+    if (!n) return '';
+    const dateStr = n.time_posted ?? n.date ?? n.time ?? n.createdAt;
+    if (!dateStr) return n?.time_posted ?? n?.date ?? '';
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? dateStr : d.toLocaleString();
   }
 }
