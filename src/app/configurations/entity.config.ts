@@ -12,8 +12,8 @@ export const ENTITY_CONFIG = {
     title: 'Registered User'
   },
   student: {
-    endpoint: 'student',
-    questionFn: 'getStudentQuestions',
+    endpoint: 'students',
+    questionFn: 'getStudentsQuestions',
     title: 'Student'
   },
   teacher: {

@@ -92,24 +92,21 @@ getUserQuestions() {
 
   getRegisteredUserQuestions() {
     const questions: QuestionBase<string>[] = [
-      // prikazuje registered usere normalno, ali ne može da ih doda
-      new TextboxQuestion({ key: 'id', type: 'number' }),
+      new TextboxQuestion({ key: 'id', type: 'readonly' }),
+
+
 
     ];
     return of(questions.sort((a, b) => a.order - b.order));
   }
-  getStudentQuestions() {
+  getStudentsQuestions() {
     const questions: QuestionBase<string>[] = [
-      // prikazuje normalno ali ne kreira studenta, valjda zato što nema selekciju za adresu?
       new TextboxQuestion({ key: 'id', type: 'hidden' }),
-      new TextboxQuestion({ key: 'name', label: 'Name', required: true }),
-      new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
-      new TextboxQuestion({ key: 'password', label: 'Password', required: true })
+      new TextboxQuestion({ key: 'addressId', type: 'number',label: 'Address ID'}),
     ];
     return of(questions.sort((a, b) => a.order - b.order));
   } getAdministratorQuestions() {
     const questions: QuestionBase<string>[] = [
-      // ne kreira administratora ali ih prikazuje, šta je access level?
       new TextboxQuestion({ key: 'id', type: 'hidden' }),
       new TextboxQuestion({ key: 'accessLevel', label: 'Access Level', required: true }),
       new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
@@ -200,8 +197,7 @@ getUserQuestions() {
 
   getAddressQuestions() {
     const questions: QuestionBase<string>[] = [
-      // nešto nije u redu sa prikazom adrese
-      // i adresa takođe ne može da se kreira jer ne prikazuje one dropdown opcije
+
       new TextboxQuestion({
         key: 'id',
         type: 'hidden'
@@ -225,16 +221,6 @@ getUserQuestions() {
         key: 'country',
         label: 'Country',
         required: true
-      }),
-      new DropdownQuestion({
-        key: 'student',
-        label: 'Student',
-        options: []
-      }),
-      new DropdownQuestion({
-        key: 'teacher',
-        label: 'Teacher',
-        options: []
       }),
       new DropdownQuestion({
         key: 'university',
@@ -401,12 +387,10 @@ getUserQuestions() {
   }
   getTeacherQuestions() {
     const questions: QuestionBase<string>[] = [
-      // prikazuje teachere normalno, ali ih ne kreira, valjda zato što nema polje za adresu
-      new TextboxQuestion({ key: 'id', type: 'hidden' }),
-      new TextboxQuestion({ key: 'name', label: 'Name', required: true }),
+      new TextboxQuestion({ key: 'id', type: 'hidden',label: 'ID' }),
+      new TextboxQuestion({ key: 'addressId', type: 'number',label: 'Address ID' }),
       new TextboxQuestion({ key: 'biography', label: 'Biography' }),
-      new TextboxQuestion({ key: 'email', label: 'Email', required: true }),
-      new TextboxQuestion({ key: 'password', label: 'Password', required: true })
+
     ];
     return of(questions.sort((a, b) => a.order - b.order));
   }
