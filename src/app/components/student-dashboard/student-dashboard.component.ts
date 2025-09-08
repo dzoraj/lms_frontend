@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { DynamicService } from '../../service/dynamic-service/dynamic.service';
 import { LoginService } from '../../service/loginService/login.service';
+import { NavbarComponent } from "../navbar/navbar.component";
 
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NavbarComponent],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.css']
 })
