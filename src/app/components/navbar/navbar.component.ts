@@ -34,12 +34,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.isLoggedIn = loggedIn;
 
       const roles = this.loginService.getRoles();
-      console.log('JWT roles:', roles); // 👈 LOG za debug
+      console.log('JWT roles:', roles); 
 
       if (loggedIn) {
         this.isAdmin = roles.includes('ROLE_ADMIN');
         this.isStudent = roles.includes('ROLE_STUDENT');
-        this.isTeacher = roles.includes('ROLE_NASTAVNIK');
+        this.isTeacher = roles.includes('ROLE_TEACHER');
         this.isSa = roles.includes('ROLE_SA');
       } else {
         this.isAdmin = false;

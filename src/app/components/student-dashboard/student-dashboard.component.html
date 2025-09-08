@@ -1,0 +1,76 @@
+<div class="student-dashboard">
+  <h2>Student dashboard</h2>
+
+  <div *ngIf="loading" class="loading">Loading…</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <ng-container *ngIf="studentDto">
+    <section class="basic">
+      <p><strong>Name:</strong> {{ studentDto?.name ?? '—' }}</p>
+      <p><strong>Email:</strong> {{ studentDto?.email ?? '—' }}</p>
+    </section>
+
+    <section class="aggregates">
+      <p><strong>Average grade:</strong> {{ averageGrade ?? '—' }}</p>
+      <p><strong>Total ESPB:</strong> {{ totalEspb }}</p>
+    </section>
+
+    <section class="current-courses">
+      <h3>Current courses</h3>
+      <div *ngIf="!courseAttendances?.length">No current courses found.</div>
+
+      <div *ngFor="let ca of courseAttendances" class="course-card">
+        <div class="course-header">
+          <div class="title">
+            <strong>{{ ca.courseRealization?.subject?.name ?? 'Unnamed course' }}</strong>
+            <small *ngIf="ca.courseRealization?.subject?.espb !== undefined">
+              ({{ ca.courseRealization.subject.espb }} ESPB)
+            </small>
+          </div>
+
+          <div class="actions">
+            <button (click)="registerExam(ca)" [disabled]="!canRegister(ca) || ca.__registering">
+              {{ ca.__registering ? 'Registering…' : 'Register for exam' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="course-body">
+          <p>Final grade: <strong>{{ ca.konacnaOcena ?? ca.finalGrade ?? '—' }}</strong></p>
+
+          <div *ngIf="ca.courseRealization?.notifications?.length">
+            <h4>Notifications</h4>
+            <ul class="notifications">
+              <li *ngFor="let n of ca.courseRealization.notifications">
+                <div class="msg">{{ n.message }}</div>
+                <div class="meta">{{ formatNotificationDate(n) }}</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="study-history">
+      <h3>Study history</h3>
+      <div *ngIf="!studyHistory?.length">No study history.</div>
+
+      <table *ngIf="studyHistory?.length">
+        <thead>
+          <tr>
+            <th>Index</th>
+            <th>Enrollment</th>
+            <th>Study Year Id</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of studyHistory">
+            <td>{{ s.indexNumber ?? '—' }}</td>
+            <td>{{ s.enrollmentDate ?? '—' }}</td>
+            <td>{{ s.studyYearId ?? '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </ng-container>
+</div>

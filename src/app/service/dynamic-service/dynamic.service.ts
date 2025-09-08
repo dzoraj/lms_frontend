@@ -1,3 +1,4 @@
+// src/app/services/dynamic.service.ts
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -14,9 +15,15 @@ export class DynamicService {
     return this.http.get<T[]>(`${this.baseUrl}/${endpoint}`);
   }
 
-  getById<T>(endpoint:string, id:number): Observable<T>{
-    return this.http.get<T>(`${this.baseUrl}/${endpoint}/${id}`);
+  getById<T>(endpoint: string, id: number): Observable<T> {
+    const token = localStorage.getItem('token');
+    return this.http.get<T>(`${this.baseUrl}/${endpoint}/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
   }
+
 
   create<T>(endpoint:string, data:T): Observable<T>{
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, data);
@@ -29,7 +36,13 @@ export class DynamicService {
   delete(endpoint: string, id: number | string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${endpoint}/${id}`);
   }
-  getStudyProgramsByFaculty(facultyId: number) {
-  return this.http.get<any[]>(`${this.baseUrl}/studyProgram/by-faculty/${facultyId}`);  }
 
+  getStudyProgramsByFaculty(facultyId: number) {
+    return this.http.get<any[]>(`${this.baseUrl}/studyProgram/by-faculty/${facultyId}`);
+  }
+
+
+  getByPath<T>(path: string): Observable<T> {
+    return this.http.get<T>(`${this.baseUrl}/${path}`);
+  }
 }

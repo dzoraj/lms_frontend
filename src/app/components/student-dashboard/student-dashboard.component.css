@@ -1,3 +1,24 @@
-.container {
-  padding: 20px;
+.student-dashboard {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
+
+.loading { margin-bottom: 10px; color:#444; }
+.error { background:#ffe6e6; color:#b02a2a; padding:8px; border-radius:6px; margin-bottom:10px; }
+
+.aggregates { display:flex; gap:24px; margin-bottom:16px; }
+.current-courses { margin-bottom: 20px; }
+.course-card { border:1px solid #e6e6e6; border-radius:8px; padding:12px; margin-bottom:12px; background:#fff; }
+.course-header { display:flex; justify-content:space-between; align-items:center; }
+.course-header .title strong { font-size:1.05rem; }
+.course-actions button, .actions button { background:#2563eb; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.course-actions button[disabled], .actions button[disabled] { opacity:0.6; cursor:not-allowed; }
+.course-body { margin-top:8px; }
+.notifications { list-style:none; padding-left:0; }
+.notifications li { padding:8px 0; border-bottom:1px dashed #eee; }
+.msg { font-size:0.95rem; }
+.meta { font-size:0.8rem; color:#666; }
+.history-table { width:100%; border-collapse:collapse; }
+.history-table th, .history-table td { padding:8px 12px; border-bottom:1px solid #eee; text-align:left; }
