@@ -1,17 +1,11 @@
 <mat-toolbar color="primary" class="navbar">
-  <!-- Left side (Brand + links) -->
   <div class="navbar-left">
     <a routerLink="/" class="brand mat-button">LMS</a>
     <a routerLink="/university" mat-button class="WHITE">University</a>
     <a routerLink="/faculty" mat-button class="WHITE">Faculties</a>
-    <a class="WHITE" *ngIf="selectedFaculty"
-       [routerLink]="['/faculty', selectedFaculty, 'studyProgram']"
-       mat-button>
-      Study Programs
-    </a>
+
   </div>
 
-  <!-- Right side (Login/Register or Dashboards/Profile/Logout) -->
   <span class="spacer"></span>
   <div class="navbar-right">
     <ng-container *ngIf="!isLoggedIn">
@@ -25,7 +19,6 @@
       <a *ngIf="isTeacher" routerLink="/teacher-dashboard" class="WHITE" mat-button>Teacher</a>
       <a *ngIf="isSa" routerLink="/sa-dashboard" class="WHITE" mat-button>SA</a>
 
-      <!-- Profile + Logout -->
       <button mat-button [matMenuTriggerFor]="profileMenu" class="WHITE">
         <mat-icon>account_circle</mat-icon> My Profile
       </button>

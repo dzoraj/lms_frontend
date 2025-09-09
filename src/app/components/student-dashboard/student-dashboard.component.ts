@@ -5,24 +5,38 @@ import { DynamicService } from '../../service/dynamic-service/dynamic.service';
 import { LoginService } from '../../service/loginService/login.service';
 import { NavbarComponent } from "../navbar/navbar.component";
 
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [
+    CommonModule,
+    NavbarComponent,
+    MatTabsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatProgressBarModule,
+    MatIconModule
+  ],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.css']
 })
 export class StudentDashboardComponent implements OnInit {
   studentDto: any | null = null;
   courseAttendances: any[] = [];
-  studyHistory: any[] = [];            
-  studyHistoryCourses: any[] = [];     
+  studyHistory: any[] = [];
+  studyHistoryCourses: any[] = [];
   averageGrade: number | null = null;
   totalEspb: number = 0;
   totalPoints: number = 0;
   loading = false;
   error: string | null = null;
-  activeTab = 'Current Courses';
+
   constructor(private dynamic: DynamicService, private loginService: LoginService) {}
 
   ngOnInit(): void {
@@ -41,47 +55,45 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   private loadDashboard(studentId: number): void {
-  this.loading = true;
-  this.error = null;
+    this.loading = true;
+    this.error = null;
 
-  this.dynamic.getById<any>(`students/dashboard`, studentId)
-    .pipe(finalize(() => (this.loading = false)))
-    .subscribe({
-      next: (dashboard) => {
-        console.log('Full dashboard payload:', dashboard);
+    this.dynamic.getById<any>(`students/dashboard`, studentId)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (dashboard) => {
+          this.studentDto = dashboard;
+          this.courseAttendances = dashboard?.currentCourses ?? [];
+          this.studyHistory = dashboard?.studyHistory ?? [];
+          this.studyHistoryCourses = dashboard?.studyHistoryCourses ?? [];
 
-        this.studentDto = dashboard;
-        this.courseAttendances = dashboard?.currentCourses ?? [];
-        this.studyHistory = dashboard?.studyHistory ?? [];                  
-        this.studyHistoryCourses = dashboard?.studyHistoryCourses ?? [];   
+          if (dashboard?.averageGrade != null) {
+            this.averageGrade = dashboard.averageGrade;
+          } else {
+            const grades = this.studyHistoryCourses
+              .filter(s => s?.finalGrade != null)
+              .map(s => Number(s.finalGrade));
+            this.averageGrade = grades.length ? grades.reduce((a, b) => a + b, 0) / grades.length : null;
+          }
 
-        if (dashboard?.averageGrade != null) {
-          this.averageGrade = dashboard.averageGrade;
-        } else {
-          const grades = this.studyHistoryCourses
-            .filter(s => s?.finalGrade != null)
-            .map(s => Number(s.finalGrade));
-          this.averageGrade = grades.length ? grades.reduce((a, b) => a + b, 0) / grades.length : null;
+          if (dashboard?.totalEspb != null) {
+            this.totalEspb = dashboard.totalEspb;
+          } else {
+            this.totalEspb = this.studyHistoryCourses
+              .filter(s => s?.espb != null && s?.finalGrade != null)
+              .reduce((sum, s) => sum + (Number(s.espb) || 0), 0);
+          }
+
+          this.totalPoints = this.studyHistoryCourses
+            .filter(s => s?.finalPoints != null)
+            .reduce((sum, s) => sum + (Number(s.finalPoints) || 0), 0);
+        },
+        error: (err) => {
+          console.error('Failed to load student dashboard', err);
+          this.error = err?.error?.message || err?.message || 'Failed to load student dashboard';
         }
-
-        if (dashboard?.totalEspb != null) {
-          this.totalEspb = dashboard.totalEspb;
-        } else {
-          this.totalEspb = this.studyHistoryCourses
-            .filter(s => s?.espb != null && s?.finalGrade != null)
-            .reduce((sum, s) => sum + (Number(s.espb) || 0), 0);
-        }
-
-        this.totalPoints = this.studyHistoryCourses
-          .filter(s => s?.finalPoints != null)
-          .reduce((sum, s) => sum + (Number(s.finalPoints) || 0), 0);
-      },
-      error: (err) => {
-        console.error('Failed to load student dashboard', err);
-        this.error = err?.error?.message || err?.message || 'Failed to load student dashboard';
-      }
-    });
-}
+      });
+  }
 
   registerExam(ca: any): void {
     if (!ca) return;

@@ -1,17 +1,32 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HomeComponent } from '../home/home.component';
 import { SelectedFacultyService } from '../../service/selected-faculty.service';
+import { StudyProgramsComponent } from '../study-programs/study-programs.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-faculty-detail',
   standalone: true,
-  imports: [HomeComponent],
+  imports: [HomeComponent, StudyProgramsComponent, CommonModule, RouterLink],
   template: `
     <app-home>
-      <h2>Faculty ID: {{ facultyId }}</h2>
+      <div class="page">
+        <header class="header">
+          <a routerLink="/faculty" class="back-link">← Back to Faculties</a>
+        </header>
+
+        <app-study-programs></app-study-programs>
+      </div>
     </app-home>
-  `
+  `,
+  styles: [`
+    .page { padding: 1rem; }
+    .header { max-width: 1100px; margin: 0 auto 0.5rem; display: flex; align-items: baseline; gap: 1rem; }
+    .title { margin: 0; font-weight: 700; }
+    .back-link { text-decoration: none; opacity: .85; }
+    .back-link:hover { text-decoration: underline; }
+  `]
 })
 export class FacultyDetailComponent implements OnInit {
   facultyId: number | null = null;

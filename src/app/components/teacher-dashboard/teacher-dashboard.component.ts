@@ -49,14 +49,14 @@ export class TeacherDashboardComponent implements OnInit {
   students: any[] = [];
   studentsLoading = false;
 
-  tableStudentCols = ['name', 'email', 'indexNumber', 'enrollmentYear', 'averageGrade', 'ects'];
+  tableStudentCols = ['name', 'email', 'indexNumber', 'enrollmentYear', 'averageGrade', 'espb'];
   tableStudentLabels = {
     name: 'Student',
     email: 'Email',
     indexNumber: 'Index',
     enrollmentYear: 'Enrollment Year',
     averageGrade: 'Avg',
-    ects: 'ECTS'
+    espb: 'ESPB'
   };
 
   selectedStudentProfile: any | null = null;

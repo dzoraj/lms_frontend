@@ -1,106 +1,125 @@
 <app-navbar></app-navbar>
-<div class="student-dashboard">
+
+<div class="student-dashboard container mt-4">
   <h2>Student Dashboard</h2>
 
-  <div *ngIf="loading" class="loading">Loading…</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  <div *ngIf="error" class="alert alert-danger mt-2">{{ error }}</div>
 
-  <ng-container *ngIf="studentDto">
+  <ng-container *ngIf="studentDto && !loading">
 
-    <section class="aggregates">
-      <p><strong>Average grade:</strong> {{ averageGrade ?? '—' }}</p>
-      <p><strong>Total ESPB:</strong> {{ totalEspb }}</p>
+    <section class="mb-3 d-flex gap-3">
+      <mat-card class="px-3 py-2">
+        <strong>Average grade:</strong> {{ averageGrade ?? '—' }}
+      </mat-card>
+      <mat-card class="px-3 py-2">
+        <strong>Total ESPB:</strong> {{ totalEspb }}
+      </mat-card>
     </section>
 
-    <div class="tabs">
-      <button
-        *ngFor="let tab of ['Current Courses', 'Enrollment History', 'Subjects']"
-        [class.active]="activeTab === tab"
-        (click)="activeTab = tab"
-      >
-        {{ tab }}
-      </button>
-    </div>
+    <mat-tab-group>
+      <mat-tab label="Current Courses">
+        <div class="mt-3">
+          <div *ngIf="!courseAttendances?.length" class="text-muted">No current courses found.</div>
 
-    <div class="tab-content">
+          <div *ngFor="let ca of courseAttendances" class="mb-3">
+            <mat-card>
+              <div class="course-header">
+                <div class="title">
+                  <strong>{{ ca.courseRealization?.subject?.name ?? 'Unnamed course' }}</strong>
+                  <small *ngIf="ca.courseRealization?.subject?.espb !== undefined">
+                    ({{ ca.courseRealization.subject.espb }} ESPB)
+                  </small>
+                </div>
 
-      <div *ngIf="activeTab === 'Current Courses'">
-        <div *ngIf="!courseAttendances?.length">No current courses found.</div>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="registerExam(ca)"
+                  [disabled]="!canRegister(ca) || ca.__registering">
+                  <mat-icon *ngIf="!ca.__registering">assignment_turned_in</mat-icon>
+                  {{ ca.__registering ? 'Registering…' : 'Register for exam' }}
+                </button>
+              </div>
 
-        <div *ngFor="let ca of courseAttendances" class="course-card">
-          <div class="course-header">
-            <div class="title">
-              <strong>{{ ca.courseRealization?.subject?.name ?? 'Unnamed course' }}</strong>
-              <small *ngIf="ca.courseRealization?.subject?.espb !== undefined">
-                ({{ ca.courseRealization.subject.espb }} ESPB)
-              </small>
-            </div>
-            <div class="actions">
-              <button (click)="registerExam(ca)" [disabled]="!canRegister(ca) || ca.__registering">
-                {{ ca.__registering ? 'Registering…' : 'Register for exam' }}
-              </button>
-            </div>
-          </div>
+              <div class="course-body">
+                <p>Final grade: <strong>{{ ca.konacnaOcena ?? ca.finalGrade ?? '—' }}</strong></p>
 
-          <div class="course-body">
-            <p>Final grade: <strong>{{ ca.konacnaOcena ?? ca.finalGrade ?? '—' }}</strong></p>
-            <div *ngIf="ca.courseRealization?.notifications?.length">
-              <h4>Notifications</h4>
-              <ul class="notifications">
-                <li *ngFor="let n of ca.courseRealization.notifications">
-                  <div class="msg">{{ n.content ?? n.message ?? '—' }}</div>
-                  <div class="meta">{{ formatNotificationDate(n) }}</div>
-                </li>
-              </ul>
-            </div>
+                <ng-container *ngIf="ca.courseRealization?.notifications?.length">
+                  <h4>Notifications</h4>
+                  <ul class="notifications">
+                    <li *ngFor="let n of ca.courseRealization.notifications">
+                      <div class="msg">{{ n.content ?? n.message ?? '—' }}</div>
+                      <div class="meta">{{ formatNotificationDate(n) }}</div>
+                    </li>
+                  </ul>
+                </ng-container>
+              </div>
+            </mat-card>
           </div>
         </div>
-      </div>
+      </mat-tab>
 
-      <div *ngIf="activeTab === 'Enrollment History'">
-        <div *ngIf="!studyHistory?.length">No enrollment history.</div>
-        <table *ngIf="studyHistory?.length">
-          <thead>
-            <tr>
-              <th>Index</th>
-              <th>Enrollment</th>
-              <th>Study Year</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let s of studyHistory">
-              <td>{{ s.indexNumber ?? '—' }}</td>
-              <td>{{ s.enrollmentDate ?? '—' }}</td>
-              <td>{{ s.studyYearId ?? '—' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- Enrollment History -->
+      <mat-tab label="Enrollment History">
+        <div class="mt-3">
+          <div *ngIf="!studyHistory?.length" class="text-muted">No enrollment history.</div>
 
-      <div *ngIf="activeTab === 'Subjects'">
-        <div *ngIf="!studyHistoryCourses?.length">No passed/attempted subjects.</div>
-        <table *ngIf="studyHistoryCourses?.length">
-          <thead>
-            <tr>
-              <th>Subject</th>
-              <th>ESPB</th>
-              <th>Attempts</th>
-              <th>Final Points</th>
-              <th>Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let course of studyHistoryCourses">
-              <td>{{ course.subjectName ?? '—' }}</td>
-              <td>{{ course.espb ?? '—' }}</td>
-              <td>{{ course.attempts ?? '—' }}</td>
-              <td>{{ course.finalPoints ?? '—' }}</td>
-              <td>{{ course.finalGrade ?? '—' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+          <mat-card *ngIf="studyHistory?.length">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Index</th>
+                    <th>Enrollment</th>
+                    <th>Study Year</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let s of studyHistory">
+                    <td>{{ s.indexNumber ?? '—' }}</td>
+                    <td>{{ s.enrollmentDate ?? '—' }}</td>
+                    <td>{{ s.studyYearId ?? '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-card>
+        </div>
+      </mat-tab>
 
-    </div>
+      <!-- Subjects -->
+      <mat-tab label="Subjects">
+        <div class="mt-3">
+          <div *ngIf="!studyHistoryCourses?.length" class="text-muted">No passed/attempted subjects.</div>
+
+          <mat-card *ngIf="studyHistoryCourses?.length">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>ESPB</th>
+                    <th>Attempts</th>
+                    <th>Final Points</th>
+                    <th>Grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let course of studyHistoryCourses">
+                    <td>{{ course.subjectName ?? '—' }}</td>
+                    <td>{{ course.espb ?? '—' }}</td>
+                    <td>{{ course.attempts ?? '—' }}</td>
+                    <td>{{ course.finalPoints ?? '—' }}</td>
+                    <td>{{ course.finalGrade ?? '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
   </ng-container>
 </div>
