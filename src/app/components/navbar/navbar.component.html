@@ -1,27 +1,42 @@
-<nav class="navbar">
+<mat-toolbar color="primary" class="navbar">
+  <!-- Left side (Brand + links) -->
   <div class="navbar-left">
-    <a routerLink="/" class="brand">LMS</a>
-    <a routerLink="/university" class="nav-link">University</a>
-    <a routerLink="/faculty" class="nav-link">Faculties</a>
-    <a *ngIf="selectedFaculty" [routerLink]="['/faculty', selectedFaculty, 'studyProgram']" class="nav-link">
+    <a routerLink="/" class="brand mat-button">LMS</a>
+    <a routerLink="/university" mat-button class="WHITE">University</a>
+    <a routerLink="/faculty" mat-button class="WHITE">Faculties</a>
+    <a class="WHITE" *ngIf="selectedFaculty"
+       [routerLink]="['/faculty', selectedFaculty, 'studyProgram']"
+       mat-button>
       Study Programs
     </a>
   </div>
 
+  <!-- Right side (Login/Register or Dashboards/Profile/Logout) -->
+  <span class="spacer"></span>
   <div class="navbar-right">
     <ng-container *ngIf="!isLoggedIn">
-      <a routerLink="/login" class="nav-link">Login</a>
-      <a routerLink="/register" class="nav-link">Register</a>
+      <a routerLink="/login" mat-raised-button color="accent" class="WHITE">Login</a>
+      <a routerLink="/register" mat-stroked-button color="accent" class="WHITE">Register</a>
     </ng-container>
 
-    <ng-container *ngIf="isLoggedIn">
-      <a *ngIf="isAdmin" routerLink="/admin-dashboard" class="nav-link">Admin Dashboard</a>
-      <a *ngIf="isStudent" routerLink="/student-dashboard" class="nav-link">Student Dashboard</a>
-      <a *ngIf="isTeacher" routerLink="/teacher-dashboard" class="nav-link">Teacher Dashboard</a>
-      <a *ngIf="isSa" routerLink="/sa-dashboard" class="nav-link">Sa Dashboard</a>
-      <a routerLink="/profile" class="nav-link">My Profile</a>
-      <button (click)="logout()" class="nav-link btn-link">Logout</button>
+    <ng-container *ngIf="isLoggedIn" >
+      <a *ngIf="isAdmin" routerLink="/admin-dashboard" class="WHITE" mat-button>Admin</a>
+      <a *ngIf="isStudent" routerLink="/student-dashboard" class="WHITE" mat-button>Student</a>
+      <a *ngIf="isTeacher" routerLink="/teacher-dashboard" class="WHITE" mat-button>Teacher</a>
+      <a *ngIf="isSa" routerLink="/sa-dashboard" class="WHITE" mat-button>SA</a>
+
+      <!-- Profile + Logout -->
+      <button mat-button [matMenuTriggerFor]="profileMenu" class="WHITE">
+        <mat-icon>account_circle</mat-icon> My Profile
+      </button>
+      <mat-menu #profileMenu="matMenu">
+        <button routerLink="/profile" mat-menu-item>
+          <mat-icon>person</mat-icon> Profile
+        </button>
+        <button (click)="logout()" mat-menu-item>
+          <mat-icon>logout</mat-icon> Logout
+        </button>
+      </mat-menu>
     </ng-container>
   </div>
-</nav>
-
+</mat-toolbar>

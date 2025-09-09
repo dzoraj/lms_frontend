@@ -20,10 +20,9 @@ export class StudentDashboardComponent implements OnInit {
   averageGrade: number | null = null;
   totalEspb: number = 0;
   totalPoints: number = 0;
-
   loading = false;
   error: string | null = null;
-
+  activeTab = 'Current Courses';
   constructor(private dynamic: DynamicService, private loginService: LoginService) {}
 
   ngOnInit(): void {

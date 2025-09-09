@@ -14,8 +14,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        // Token expired or unauthorized
-        localStorage.removeItem('token');  // clear token
+        localStorage.removeItem('token');  
         alert('Session expired. Please log in again.');
         router.navigate(['/login']);
       }

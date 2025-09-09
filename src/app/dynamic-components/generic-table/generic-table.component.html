@@ -14,17 +14,20 @@
   <thead>
     <tr>
       <th *ngFor="let column of columns">
-        <button (click)="sort(column)">{{ column }}</button>
+        <button (click)="sort(column)">{{ headerFor(column) }}</button>
       </th>
       <th>Actions</th>
     </tr>
   </thead>
+
   <tbody *appNoData="filteredData; template: praznaTabela">
     <tr *ngFor="let row of filteredData">
-      <td *ngFor="let column of columns">{{ getValue(row, column) }}</td>
+      <td *ngFor="let column of columns">
+        {{ getValue(row, column) }}
+      </td>
       <td>
-        <button (click)="remove(row.id)">Ukloni</button>
-        <button (click)="update(row)">Izmeni</button>
+        <button (click)="remove(row.id)">Remove</button>
+        <button (click)="update(row)">Edit</button>
       </td>
     </tr>
   </tbody>

@@ -3,6 +3,7 @@
   <h1>Admin Dashboard</h1>
 
   <div class="grid">
+    <!-- Entity Cards -->
     <a
       class="dashboard-card"
       *ngFor="let key of entityKeys"
@@ -13,11 +14,15 @@
   </div>
 
   <div class="role-toggle">
-    <button (click)="toggleRoleManager()">
+    <button class="primary-btn" (click)="toggleRoleManager()">
       {{ showUserRoleManager ? 'Hide' : 'Manage User Roles' }}
     </button>
-      <a href="assets/db.png" target="_blank"><button>DATABASE PIC</button></a>
+    <a href="assets/db.png" target="_blank">
+      <button class="secondary-btn">View Database</button>
+    </a>
   </div>
 
-  <app-user-role-manager *ngIf="showUserRoleManager"></app-user-role-manager>
+  <div *ngIf="showUserRoleManager" class="role-manager-panel">
+    <app-user-role-manager></app-user-role-manager>
+  </div>
 </div>

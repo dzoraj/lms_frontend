@@ -831,29 +831,38 @@ getFacultyQuestions() {
     return of(questions.sort((a, b) => a.order - b.order));
   }
 
-  getEvaluationInstrumentQuestions() {
-    const questions: QuestionBase<any>[] = [
-      new TextboxQuestion({
-        key: "id",
-        type: "hidden"
-      }),
-      new TextboxQuestion({
-        key: "name",
-        label: "Name",
-        required: false,
-        order: 1
-      }),
-      new DropdownQuestion({
-        key: "file",
-        label: "File",
-        options: [], // Fill dynamically with File id-name pairs
-        required: false,
-        order: 2
-      }),
-      // evaluations are arrays, handle separately
-    ];
-    return of(questions.sort((a, b) => a.order - b.order));
-  }
+getEvaluationInstrumentQuestions() {
+  return this.dynamicService.getAll<any>('file').pipe(
+    map(files => {
+      const fileOptions = (files || []).map((f: any) => ({
+        id: f.id,
+        naziv: f.name || f.description || `File #${f.id}`
+      }));
+
+      const questions: QuestionBase<any>[] = [
+        new TextboxQuestion({
+          key: "id",
+          type: "hidden"
+        }),
+        new TextboxQuestion({
+          key: "name",
+          label: "Name",
+          required: true,
+          order: 1
+        }),
+        new DropdownQuestion({
+          key: "file",
+          label: "File",
+          options: fileOptions, 
+          required: false,
+          order: 2
+        }),
+      ];
+      return questions.sort((a, b) => a.order - b.order);
+    })
+  );
+}
+
 
   getTeachingMaterialQuestions() {
     const questions: QuestionBase<any>[] = [

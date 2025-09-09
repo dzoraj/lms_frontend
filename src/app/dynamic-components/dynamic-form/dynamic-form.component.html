@@ -2,7 +2,6 @@
 
   <div *ngFor="let question of questions" class="form-row">
 
-    <!-- Only show dropdown if options exist AND it's not empty -->
     <div *ngIf="(question.options?.length ?? 0) > 0">
       <label>{{ question.label }}</label>
       <select [formControlName]="question.key">
@@ -15,7 +14,6 @@
 
 
 
-    <!-- Otherwise, show normal input -->
     <div *ngIf="!question.options || question.options.length === 0">
       <input
         [type]="question.type || 'text'"

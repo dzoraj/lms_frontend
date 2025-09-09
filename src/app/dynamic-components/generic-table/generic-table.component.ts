@@ -6,49 +6,96 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-generic-table',
   standalone: true,
-  imports: [NoDataDirective,CommonModule,FormsModule],
+  imports: [NoDataDirective, CommonModule, FormsModule],
   templateUrl: './generic-table.component.html',
   styleUrls: ['./generic-table.component.css']
 })
 export class GenericTableComponent implements OnChanges {
-  
+
   @Input() data: any[] = [];
+
+  @Input() displayedColumns?: string[];
+
+  @Input() hiddenKeys: string[] = ['id', 'deleted', 'evaluations'];
+
+  @Input() columnLabels?: Record<string, string>;
+
+  @Input() columnRenderers?: Record<string, (row: any) => string>;
+
   @Output() removeEvent = new EventEmitter<number>();
   @Output() editEvent = new EventEmitter<any>();
 
   columns: string[] = [];
   filteredData: any[] = [];
   searchTerm: string = '';
-
   sortDirections: { [key: string]: 'asc' | 'desc' } = {};
 
-ngOnChanges(changes: SimpleChanges) {
-  if (changes['data'] && this.data && this.data.length > 0) {
-    // Collect unique keys from all rows
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['data']) {
+      this.rebuildColumns();
+      this.filteredData = [...(this.data || [])];
+    }
+    if (changes['displayedColumns']) {
+      this.rebuildColumns();
+    }
+  }
+
+  private rebuildColumns() {
+    if (this.displayedColumns && this.displayedColumns.length) {
+      this.columns = [...this.displayedColumns];
+      return;
+    }
+    if (!this.data || this.data.length === 0) {
+      this.columns = [];
+      return;
+    }
     const allKeys = new Set<string>();
     this.data.forEach(row => {
-      Object.keys(row).forEach(k => {
-        if (k !== 'id') allKeys.add(k);
+      Object.keys(row || {}).forEach(k => {
+        if (!this.hiddenKeys.includes(k)) allKeys.add(k);
       });
     });
-
-    // Convert to array and sort alphabetically (or define your own fixed order)
     this.columns = Array.from(allKeys).sort();
+  }
 
-    // Keep filtered data aligned
-    this.filteredData = [...this.data];
-  } 
-}
+  headerFor(column: string): string {
+    return this.columnLabels?.[column] ?? column;
+  }
 
-
-  getValue(row: any, column: string): any {
+  getValue(row: any, column: string): string {
+    if (!row) return '';
+    const renderer = this.columnRenderers?.[column];
+    if (renderer) {
+      try { return String(renderer(row) ?? ''); } catch { return ''; }
+    }
     const value = row[column];
     if (value === null || value === undefined) return '';
-    if (typeof value === 'object') {
-      if (Array.isArray(value)) return value.map(v => v.name || '').filter(n => n).join(', ');
-      return value.name ?? JSON.stringify(value);
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) return '';
+      if (typeof value[0] === 'object') {
+        return value.map(v => this.bestName(v)).filter(Boolean).join(', ');
+      }
+      return value.join(', ');
     }
-    return value;
+
+    if (typeof value === 'object') {
+      return this.bestName(value) ?? '';
+    }
+
+    return String(value);
+  }
+
+  private bestName(obj: any): string | undefined {
+    if (!obj) return undefined;
+    const nameKeys = ['name', 'naziv', 'title', 'subjectName', 'fileName', 'email', 'description'];
+    for (const k of nameKeys) {
+      if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '') {
+        return String(obj[k]);
+      }
+    }
+    if (obj.id !== undefined) return `#${obj.id}`;
+    try { return JSON.stringify(obj); } catch { return ''; }
   }
 
   remove(id: number | undefined): void {
@@ -65,14 +112,23 @@ ngOnChanges(changes: SimpleChanges) {
     const direction = this.sortDirections[columnKey] === 'asc' ? 1 : -1;
 
     this.filteredData = [...this.filteredData].sort((a, b) => {
-      const valueA = a[columnKey];
-      const valueB = b[columnKey];
-      if (typeof valueA === 'string' && typeof valueB === 'string') {
-        return direction * valueA.localeCompare(valueB);
-      } else {
-        return direction * ((valueA || 0) - (valueB || 0));
+      const aVal = this.flattenForSort(a?.[columnKey]);
+      const bVal = this.flattenForSort(b?.[columnKey]);
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return direction * aVal.localeCompare(bVal);
       }
+      const aNum = typeof aVal === 'number' ? aVal : Number.NaN;
+      const bNum = typeof bVal === 'number' ? bVal : Number.NaN;
+      if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) return direction * (aNum - bNum);
+      return 0;
     });
+  }
+
+  private flattenForSort(val: any): string | number {
+    if (val === null || val === undefined) return '';
+    if (Array.isArray(val)) return String(val.map(v => (typeof v === 'object' ? this.bestName(v) : v)).join(', '));
+    if (typeof val === 'object') return this.bestName(val) ?? '';
+    return val;
   }
 
   filterTable() {
@@ -81,12 +137,8 @@ ngOnChanges(changes: SimpleChanges) {
       this.filteredData = [...this.data];
       return;
     }
-
-    this.filteredData = this.data.filter(row => {
-      return this.columns.some(col => {
-        const val = this.getValue(row, col);
-        return val.toString().toLowerCase().includes(term);
-      });
-    });
+    this.filteredData = this.data.filter(row =>
+      this.columns.some(col => String(this.getValue(row, col)).toLowerCase().includes(term))
+    );
   }
 }
