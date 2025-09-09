@@ -1,0 +1,239 @@
+-- ================================
+-- ROLES
+-- ================================
+INSERT INTO roles (deleted, name) VALUES
+(b'0','ADMIN'),
+(b'0','TEACHER'),
+(b'0','STUDENT');
+
+-- ================================
+-- UNIVERSITIES
+-- ================================
+INSERT INTO university (deleted, establishment_date, name) VALUES
+(b'0','1960-01-01','University of Novi Sad'),
+(b'0','1970-01-01','University of Belgrade');
+
+-- ================================
+-- USERS (10 teachers, 20 students, 1 admin)
+-- ================================
+-- Teachers
+INSERT INTO users (deleted,email,jmbg,name,password) VALUES
+(b'0','teacher1@test.com','1111111111111','Teacher One','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher2@test.com','1111111111112','Teacher Two','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher3@test.com','1111111111113','Teacher Three','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher4@test.com','1111111111114','Teacher Four','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher5@test.com','1111111111115','Teacher Five','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher6@test.com','1111111111116','Teacher Six','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher7@test.com','1111111111117','Teacher Seven','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher8@test.com','1111111111118','Teacher Eight','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher9@test.com','1111111111119','Teacher Nine','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','teacher10@test.com','1111111111120','Teacher Ten','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2');
+
+-- Students
+INSERT INTO users (deleted,email,jmbg,name,password) VALUES
+(b'0','student1@test.com','2222222222221','Student One','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student2@test.com','2222222222222','Student Two','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student3@test.com','2222222222223','Student Three','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student4@test.com','2222222222224','Student Four','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student5@test.com','2222222222225','Student Five','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student6@test.com','2222222222226','Student Six','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student7@test.com','2222222222227','Student Seven','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student8@test.com','2222222222228','Student Eight','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student9@test.com','2222222222229','Student Nine','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student10@test.com','2222222222230','Student Ten','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student11@test.com','2222222222231','Student Eleven','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student12@test.com','2222222222232','Student Twelve','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student13@test.com','2222222222233','Student Thirteen','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student14@test.com','2222222222234','Student Fourteen','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student15@test.com','2222222222235','Student Fifteen','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student16@test.com','2222222222236','Student Sixteen','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student17@test.com','2222222222237','Student Seventeen','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student18@test.com','2222222222238','Student Eighteen','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student19@test.com','2222222222239','Student Nineteen','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2'),
+(b'0','student20@test.com','2222222222240','Student Twenty','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2');
+
+-- Admin
+INSERT INTO users (deleted,email,jmbg,name,password) VALUES
+(b'0','admin@test.com','3333333333333','Main Admin','$2a$10$ras3PwVibx6633j0Zh3zie.Qlv5Yfv5jjwPJKTOXCcKHYrqv8E1f2');
+
+-- ================================
+-- REGISTERED USERS
+-- ================================
+INSERT INTO registered_user (id)
+SELECT id FROM users;
+
+-- ================================
+-- TEACHERS / STUDENTS / ADMIN
+-- ================================
+INSERT INTO teacher (id, biography)
+SELECT id, CONCAT('Biography for ',name)
+FROM users WHERE email LIKE 'teacher%';
+
+INSERT INTO student (id)
+SELECT id FROM users WHERE email LIKE 'student%';
+
+INSERT INTO administrator (id, access_level)
+SELECT id,'FULL' FROM users WHERE email='admin@test.com';
+
+-- ================================
+-- USER ROLES
+-- ================================
+INSERT INTO user_roles (role_id,user_id)
+SELECT 2,id FROM users WHERE email LIKE 'teacher%'; -- TEACHERS
+INSERT INTO user_roles (role_id,user_id)
+SELECT 3,id FROM users WHERE email LIKE 'student%'; -- STUDENTS
+INSERT INTO user_roles (role_id,user_id)
+SELECT 1,id FROM users WHERE email='admin@test.com'; -- ADMIN
+
+-- ================================
+-- FACULTIES
+-- ================================
+INSERT INTO faculty (deleted,dean_id,university_id,name) VALUES
+(b'0',1,1,'Faculty of Sciences'),
+(b'0',2,2,'Faculty of Engineering');
+
+-- ================================
+-- STUDY PROGRAMS
+-- ================================
+INSERT INTO study_program (deleted,faculty_id,leader_id,name) VALUES
+(b'0',1,3,'Computer Science'),
+(b'0',2,4,'Mechanical Engineering');
+
+-- ================================
+-- STUDY YEARS
+-- ================================
+INSERT INTO study_year (deleted,enrollment_date,study_program_id) VALUES
+(b'0','2022-10-01',1),
+(b'0','2022-10-01',2);
+
+-- ================================
+-- SUBJECTS
+-- ================================
+INSERT INTO subject (deleted,espb,lab_count,lecture_count,mandatory,study_year_id,name) VALUES
+(b'0',6,2,3,b'1',1,'Databases'),
+(b'0',6,2,3,b'1',1,'Algorithms'),
+(b'0',6,2,3,b'1',2,'Thermodynamics'),
+(b'0',6,2,3,b'0',2,'Robotics');
+
+-- ================================
+-- COURSE REALIZATIONS
+-- ================================
+INSERT INTO course_realization (deleted,subject_id) VALUES
+(b'0',1),(b'0',2),(b'0',3),(b'0',4);
+
+-- ================================
+-- TEACHING TYPES
+-- ================================
+INSERT INTO teaching_type (deleted,name) VALUES
+(b'0','Lecture'),
+(b'0','Lab'),
+(b'0','Seminar');
+
+-- ================================
+-- TEACHER ON COURSE
+-- ================================
+INSERT INTO teacher_on_course (deleted,number_of_classes,course_realization_id,teacher_id,teaching_type_id) VALUES
+(b'0',30,1,1,1),
+(b'0',15,1,2,2),
+(b'0',20,2,3,1),
+(b'0',25,3,4,1);
+
+-- ================================
+-- STUDENT IN YEAR
+-- ================================
+INSERT INTO student_in_year (deleted,enrollment_date,student_id,study_year_id,index_number)
+SELECT b'0','2022-10-01',id,1,CONCAT('2022/',id)
+FROM student LIMIT 10;
+
+INSERT INTO student_in_year (deleted,enrollment_date,student_id,study_year_id,index_number)
+SELECT b'0','2022-10-01',id,2,CONCAT('2022/',id)
+FROM student LIMIT 10 OFFSET 10;
+
+-- ================================
+-- COURSE ATTENDANCE
+-- ================================
+INSERT INTO course_attendance (deleted,konacna_ocena,course_realization_id,student_id) VALUES
+(b'0',8,1,11),
+(b'0',9,1,12),
+(b'0',7,2,13),
+(b'0',10,2,14);
+
+-- ================================
+-- EVALUATION TYPES
+-- ================================
+INSERT INTO evaluation_type (deleted,name) VALUES
+(b'0','Exam'),
+(b'0','Colloquium'),
+(b'0','Project');
+
+-- ================================
+-- EVALUATION INSTRUMENTS
+-- ================================
+INSERT INTO evaluation_instrument (deleted,name) VALUES
+(b'0','Written Test'),
+(b'0','Oral Exam'),
+(b'0','Project Report');
+
+-- ================================
+-- KNOWLEDGE EVALUATIONS
+-- ================================
+INSERT INTO knowledge_evaluation (deleted,points,course_realization_id,evaluation_instrument_id,evaluation_type_id,start_time,end_time) VALUES
+(b'0',100,1,1,1,'2023-01-10 10:00:00','2023-01-10 12:00:00'),
+(b'0',50,1,2,2,'2023-02-15 10:00:00','2023-02-15 11:00:00');
+
+-- ================================
+-- EVALUATION ATTEMPTS
+-- ================================
+INSERT INTO evaluation_attempt (deleted,points,evaluation_id,student_in_year_id,note) VALUES
+(b'0',85,1,1,'Good performance'),
+(b'0',40,2,2,'Needs improvement');
+
+-- ================================
+-- EDUCATIONAL GOALS
+-- ================================
+INSERT INTO educational_goal (deleted,description) VALUES
+(b'0','Critical thinking'),
+(b'0','Problem solving'),
+(b'0','Teamwork');
+
+-- ================================
+-- LEARNING OUTCOMES
+-- ================================
+INSERT INTO learning_outcome (deleted,subject_id,description) VALUES
+(b'0',1,'Understand relational databases'),
+(b'0',2,'Implement efficient algorithms');
+
+-- ================================
+-- LEARNING OUTCOME ↔ EDUCATIONAL GOAL
+-- ================================
+INSERT INTO learning_outcome_educational_goal (educational_goal_id,learning_outcome_id) VALUES
+(1,1),(2,2);
+
+-- ================================
+-- TEACHING MATERIAL
+-- ================================
+INSERT INTO teaching_material (deleted,learning_outcome_id,year_of_publication,authors,name) VALUES
+(b'0',1,'2020-01-01','Author A','Database Book'),
+(b'0',2,'2021-01-01','Author B','Algorithms Notes');
+
+-- ================================
+-- FORUM
+-- ================================
+INSERT INTO forum (deleted,javni) VALUES (b'0',b'1');
+
+-- ================================
+-- USERS ON FORUM
+-- ================================
+INSERT INTO user_on_forum (deleted,forum_id,registered_user_id,role_id) VALUES
+(b'0',1,1,2), -- teacher
+(b'0',1,11,3); -- student
+
+-- ================================
+-- TOPICS & POSTS
+-- ================================
+INSERT INTO topic (deleted,forum_id,user_on_forum_id,name) VALUES
+(b'0',1,1,'General Discussion');
+
+INSERT INTO post (deleted,posting_time,topic_id,user_on_forum_id,content) VALUES
+(b'0','2023-01-01',1,1,'Welcome to the forum!'),
+(b'0','2023-01-02',1,2,'Hello teacher!');
