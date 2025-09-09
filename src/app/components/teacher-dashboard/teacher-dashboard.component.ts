@@ -9,12 +9,21 @@ import { QuestionService } from '../../service/question/question.service';
 
 import { NavbarComponent } from "../navbar/navbar.component";
 import { MatTabsModule } from '@angular/material/tabs';
+import { FormsModule } from '@angular/forms';
 import { GenericCrudComponent } from '../generic-crud/generic-crud.component';
+import { GenericTableComponent } from '../../dynamic-components/generic-table/generic-table.component';
 
 @Component({
   selector: 'app-teacher-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, MatTabsModule, GenericCrudComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NavbarComponent,
+    MatTabsModule,
+    GenericCrudComponent,
+    GenericTableComponent
+  ],
   templateUrl: './teacher-dashboard.component.html',
   styleUrls: ['./teacher-dashboard.component.css']
 })
@@ -23,14 +32,34 @@ export class TeacherDashboardComponent implements OnInit {
   subjects: any[] = [];
 
   evalInstrQuestions$!: Observable<any[]>;
-
   tableDisplayedColumns = ['name', 'file'];
   tableColumnLabels = { name: 'Instrument', file: 'File' };
   tableHiddenKeys = ['id', 'deleted', 'evaluations'];
   tableColumnRenderers = {
     file: (row: any) => row?.file?.name || '—'
-
   };
+
+  studentFilters = {
+    name: '',
+    indexNumber: '',
+    enrollmentYear: null as number | null,
+    minAvg: null as number | null,
+    maxAvg: null as number | null,
+  };
+  students: any[] = [];
+  studentsLoading = false;
+
+  tableStudentCols = ['name', 'email', 'indexNumber', 'enrollmentYear', 'averageGrade', 'ects'];
+  tableStudentLabels = {
+    name: 'Student',
+    email: 'Email',
+    indexNumber: 'Index',
+    enrollmentYear: 'Enrollment Year',
+    averageGrade: 'Avg',
+    ects: 'ECTS'
+  };
+
+  selectedStudentProfile: any | null = null;
 
   loading = false;
   error: string | null = null;
@@ -71,6 +100,48 @@ export class TeacherDashboardComponent implements OnInit {
         error: (err) => {
           this.error = err?.error?.message || err?.message || 'Failed to load teacher dashboard';
         }
+      });
+  }
+
+  searchStudents(): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
+
+    const params = new URLSearchParams();
+    const f = this.studentFilters;
+    if (f.name?.trim()) params.set('name', f.name.trim());
+    if (f.indexNumber?.trim()) params.set('indexNumber', f.indexNumber.trim());
+    if (f.enrollmentYear) params.set('enrollmentYear', String(f.enrollmentYear));
+    if (f.minAvg != null) params.set('minAvg', String(f.minAvg));
+    if (f.maxAvg != null) params.set('maxAvg', String(f.maxAvg));
+
+    this.studentsLoading = true;
+    this.dynamic.getByPath<any[]>(`teacher/${teacherId}/students?` + params.toString())
+      .pipe(finalize(() => this.studentsLoading = false))
+      .subscribe({
+        next: (list) => {
+          this.students = list ?? [];
+          this.selectedStudentProfile = null; // reset detail
+        },
+        error: (err) => {
+          console.error('Student search failed', err);
+        }
+      });
+  }
+
+  clearStudentFilters(): void {
+    this.studentFilters = { name: '', indexNumber: '', enrollmentYear: null, minAvg: null, maxAvg: null };
+    this.students = [];
+    this.selectedStudentProfile = null;
+  }
+
+  openStudentProfile(row: any): void {
+    if (!row?.id) return;
+    this.selectedStudentProfile = null;
+    this.dynamic.getByPath<any>(`students/${row.id}/profile`)
+      .subscribe({
+        next: (prof) => this.selectedStudentProfile = prof,
+        error: (err) => console.error('Profile load failed', err)
       });
   }
 }

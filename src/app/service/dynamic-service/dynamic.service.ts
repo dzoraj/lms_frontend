@@ -8,39 +8,43 @@ export class DynamicService {
 
   constructor(private http: HttpClient) {}
 
-  private authHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
+  private authHeaders(): { headers: HttpHeaders } {
+    const token = localStorage.getItem('token');
+    return {
+      headers: new HttpHeaders(
+        token ? { Authorization: `Bearer ${token}` } : {}
+      )
+    };
   }
 
-  getAll<T>(endpoint: string): Observable<T[]> {
-    return this.http.get<T[]>(`${this.baseUrl}/${endpoint}`, { headers: this.authHeaders() });
+  getAll<T>(endpoint: string): Observable<T[]>{
+    return this.http.get<T[]>(`${this.baseUrl}/${endpoint}`, this.authHeaders());
   }
 
   getById<T>(endpoint: string, id: number): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}/${endpoint}/${id}`, { headers: this.authHeaders() });
+    return this.http.get<T>(`${this.baseUrl}/${endpoint}/${id}`, this.authHeaders());
   }
 
   getByPath<T>(path: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}/${path}`, { headers: this.authHeaders() });
+    return this.http.get<T>(`${this.baseUrl}/${path}`, this.authHeaders());
   }
 
   create<T>(endpoint: string, data: T): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}/${endpoint}`, data, { headers: this.authHeaders() });
+    return this.http.post<T>(`${this.baseUrl}/${endpoint}`, data, this.authHeaders());
   }
 
   update<T>(endpoint: string, id: number, data: T): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}/${endpoint}/${id}`, data, { headers: this.authHeaders() });
+    return this.http.put<T>(`${this.baseUrl}/${endpoint}/${id}`, data, this.authHeaders());
   }
 
   delete(endpoint: string, id: number | string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${endpoint}/${id}`, { headers: this.authHeaders() });
+    return this.http.delete<void>(`${this.baseUrl}/${endpoint}/${id}`, this.authHeaders());
   }
 
   getStudyProgramsByFaculty(facultyId: number) {
-    return this.http.get<any[]>(`${this.baseUrl}/studyProgram/by-faculty/${facultyId}`, { headers: this.authHeaders() });
+    return this.http.get<any[]>(
+      `${this.baseUrl}/studyProgram/by-faculty/${facultyId}`,
+      this.authHeaders()
+    );
   }
 }
