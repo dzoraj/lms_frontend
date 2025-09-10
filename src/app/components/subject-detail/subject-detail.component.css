@@ -1,0 +1,8 @@
+    .page{max-width:1100px;margin:0 auto;padding:1rem}
+    .card{background:#fff;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.06);padding:1rem;margin:1rem 0}
+    .title{margin:0 0 .5rem}
+    .back{opacity:.85;text-decoration:none}
+    .back:hover{text-decoration:underline}
+    .lo{border-left:4px solid #ddd;padding-left:.75rem;margin:.75rem 0}
+    .materials{margin:.5rem 0 0 1rem}
+    .muted{opacity:.9}

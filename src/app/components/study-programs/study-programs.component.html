@@ -1,2 +1,11 @@
-<p>study-programs works!</p>
-  <app-navbar></app-navbar>
+    <section class="card" *ngIf="programs?.length; else empty">
+      <h3 class="section-title">Study Programs</h3>
+      <app-view-table [data]="programs" [rowLinkFn]="rowLink"></app-view-table>
+    </section>
+
+    <ng-template #empty>
+      <section class="card muted">
+        <h3 class="section-title">Study Programs</h3>
+        <p>No study programs for this faculty.</p>
+      </section>
+    </ng-template>

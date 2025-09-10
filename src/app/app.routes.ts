@@ -78,6 +78,18 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./components/sa-dashboard/sa-dashboard.component').then(m => m.SaDashboardComponent),
   },
+    {
+    path: 'study-program/:studyProgramId',
+    loadComponent: () =>
+      import('./components/study-programs-detail/study-programs-detail.component')
+        .then(m => m.StudyProgramDetailComponent)
+  },
+  {
+    path: 'subject/:subjectId',
+    loadComponent: () =>
+      import('./components/subject-detail/subject-detail.component')
+        .then(m => m.SubjectDetailComponent)
+  },
 
   {
     path: '',

@@ -1,4 +1,3 @@
-// inside admin-dashboard.component.ts
 import { Component } from '@angular/core';
 import { ENTITY_CONFIG } from '../../configurations/entity.config';
 import { RouterLink } from '@angular/router';

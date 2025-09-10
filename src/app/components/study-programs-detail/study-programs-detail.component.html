@@ -1,0 +1,41 @@
+<div class="page">
+  <a routerLink="/faculty" class="back">← Back to Faculties</a>
+
+  <section class="card" *ngIf="overview">
+    <h2 class="title">{{ overview.name }}</h2>
+    <p>Leader: <strong>{{ overview.leaderName || '—' }}</strong></p>
+  </section>
+
+  <section class="card" *ngIf="groupedSubjects.length; else noSubjects">
+    <h3>Subjects grouped by study year</h3>
+
+    <div class="accordion">
+      <div
+        class="accordion-item"
+        *ngFor="let group of groupedSubjects; let i = index"
+      >
+        <button
+          class="accordion-header"
+          (click)="toggle(i)"
+          [class.active]="openIndex === i"
+        >
+          Study Year {{ group.year }}
+        </button>
+        <div class="accordion-body" *ngIf="openIndex === i">
+          <ul>
+            <li *ngFor="let subj of group.subjects">
+              <a [routerLink]="subjectLink(subj)">
+                {{ subj.name }}
+              </a>
+              <span> (ESPB: {{ subj.espb }}, {{ subj.mandatory ? 'Mandatory':'Optional' }})</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ng-template #noSubjects>
+    <section class="card muted"><p>No subjects available.</p></section>
+  </ng-template>
+</div>

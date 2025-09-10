@@ -1,0 +1,32 @@
+    <div class="page">
+    <button (click)="goBack()" class="back">← Back</button>
+      <section class="card" *ngIf="subject">
+        <h2 class="title">{{subject.name}}</h2>
+        <p>ESPB: {{subject.espb}} • Mandatory: {{subject.mandatory ? 'Yes':'No'}}</p>
+        <p>Lectures: {{subject.lectureCount}} • Labs: {{subject.labCount}}</p>
+      </section>
+
+      <section class="card" *ngIf="subject?.syllabus?.length; else noSyllabus">
+        <h3>Syllabus & Teaching Materials</h3>
+
+        <div class="lo" *ngFor="let lo of subject.syllabus; index as i">
+          <h4>Outcome {{i+1}}</h4>
+          <p>{{lo.description}}</p>
+
+          <div *ngIf="lo.teachingMaterials?.length">
+            <h5>Teaching Materials</h5>
+            <ul class="materials">
+              <li *ngFor="let m of lo.teachingMaterials">
+                <strong>{{m.name || ('Material #'+m.id)}}</strong>
+                <span *ngIf="m.authors"> — {{m.authors}}</span>
+                <span *ngIf="m.yearOfPublication"> ({{m.yearOfPublication | date:'yyyy-MM-dd HH:mm'}})</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <ng-template #noSyllabus>
+        <section class="card muted"><p>No syllabus for this subject.</p></section>
+      </ng-template>
+    </div>

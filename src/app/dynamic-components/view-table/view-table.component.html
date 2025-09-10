@@ -1,34 +1,39 @@
 <ng-template #praznaTabela>
-    <tbody>
-      <tr>
-        <td colspan="7">No data to load</td>
-      </tr>
-    </tbody>
+  <tbody>
+    <tr>
+      <td [attr.colspan]="columns.length || 1">No data to load</td>
+    </tr>
+  </tbody>
 </ng-template>
 
 <table>
-    <thead>
-        <tr>
-            @for (column of columns; track $index){
-                <td><button (click)="sort(column)">{{column}}</button></td>
-            }
+  <thead>
+    <tr>
+      @for (column of columns; track $index) {
+        <th>
+          <button type="button" (click)="sort(column)">{{ column }}</button>
+        </th>
+      }
+    </tr>
+  </thead>
 
-        </tr>
-    </thead>
-    <tbody *appNoData="data; template: praznaTabela">
-        @for (row of data; track row){
-            <tr>
-                @for (column of columns; track $index){
-                    <td>
-                    <a *ngIf="rowLinkFn && column === 'name'; else plainText" [routerLink]="rowLinkFn(row)">
-                        {{ getValue(row, column) }}
-                    </a>
-                    <ng-template #plainText>{{ getValue(row, column) }}</ng-template>
-                    </td>
-                                    }
-
-            </tr>
+  <tbody *appNoData="data; template: praznaTabela">
+    @for (row of data; track row) {
+      <tr>
+        @for (column of columns; track $index) {
+          <td>
+            <a *ngIf="rowLinkFn && column === 'name'; else plainText"
+               [routerLink]="rowLinkFn(row)">
+              {{ getValue(row, column) }}
+            </a>
+            <ng-template #plainText>
+              {{ getValue(row, column) }}
+            </ng-template>
+          </td>
         }
-    </tbody>
+      </tr>
+    }
+  </tbody>
 </table>
+
 <button (click)="onBack()">BACK TO HOMEPAGE</button>
