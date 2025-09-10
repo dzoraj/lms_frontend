@@ -10,115 +10,96 @@
 
     <section class="mb-3 d-flex gap-3">
       <mat-card class="px-3 py-2">
-        <strong>Average grade:</strong> {{ averageGrade ?? '—' }}
+        <strong>Average grade:</strong> {{ studentDto.averageGrade ?? '—' }}
       </mat-card>
       <mat-card class="px-3 py-2">
-        <strong>Total ESPB:</strong> {{ totalEspb }}
+        <strong>Total ESPB:</strong> {{ studentDto.espb ?? '—' }}
       </mat-card>
     </section>
 
     <mat-tab-group>
-      <mat-tab label="Current Courses">
+      <mat-tab label="Enrollments">
         <div class="mt-3">
-          <div *ngIf="!courseAttendances?.length" class="text-muted">No current courses found.</div>
-
-          <div *ngFor="let ca of courseAttendances" class="mb-3">
-            <mat-card>
-              <div class="course-header">
-                <div class="title">
-                  <strong>{{ ca.courseRealization?.subject?.name ?? 'Unnamed course' }}</strong>
-                  <small *ngIf="ca.courseRealization?.subject?.espb !== undefined">
-                    ({{ ca.courseRealization.subject.espb }} ESPB)
-                  </small>
-                </div>
-
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="registerExam(ca)"
-                  [disabled]="!canRegister(ca) || ca.__registering">
-                  <mat-icon *ngIf="!ca.__registering">assignment_turned_in</mat-icon>
-                  {{ ca.__registering ? 'Registering…' : 'Register for exam' }}
-                </button>
-              </div>
-
-              <div class="course-body">
-                <p>Final grade: <strong>{{ ca.konacnaOcena ?? ca.finalGrade ?? '—' }}</strong></p>
-
-                <ng-container *ngIf="ca.courseRealization?.notifications?.length">
-                  <h4>Notifications</h4>
-                  <ul class="notifications">
-                    <li *ngFor="let n of ca.courseRealization.notifications">
-                      <div class="msg">{{ n.content ?? n.message ?? '—' }}</div>
-                      <div class="meta">{{ formatNotificationDate(n) }}</div>
-                    </li>
-                  </ul>
-                </ng-container>
-              </div>
-            </mat-card>
+          <div *ngIf="!studentDto.enrollments?.length" class="text-muted">
+            No enrollment history.
           </div>
-        </div>
-      </mat-tab>
 
-      <!-- Enrollment History -->
-      <mat-tab label="Enrollment History">
-        <div class="mt-3">
-          <div *ngIf="!studyHistory?.length" class="text-muted">No enrollment history.</div>
-
-          <mat-card *ngIf="studyHistory?.length">
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Index</th>
-                    <th>Enrollment</th>
-                    <th>Study Year</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let s of studyHistory">
-                    <td>{{ s.indexNumber ?? '—' }}</td>
-                    <td>{{ s.enrollmentDate ?? '—' }}</td>
-                    <td>{{ s.studyYearId ?? '—' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <mat-card *ngIf="studentDto.enrollments?.length">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Index</th>
+                  <th>Enrollment Date</th>
+                  <th>Study Year</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let e of studentDto.enrollments">
+                  <td>{{ e.indexNumber ?? '—' }}</td>
+                  <td>{{ e.enrollmentDate ?? '—' }}</td>
+                  <td>{{ e.studyYearId ?? '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
           </mat-card>
         </div>
       </mat-tab>
 
-      <!-- Subjects -->
-      <mat-tab label="Subjects">
-        <div class="mt-3">
-          <div *ngIf="!studyHistoryCourses?.length" class="text-muted">No passed/attempted subjects.</div>
+<mat-tab label="Subjects & Exams">
+  <div class="mt-3">
+    <mat-card>
+      <div *ngIf="!studentDto.examAttempts?.length && !studentDto.passedExams?.length" 
+           class="text-muted">
+        No exam data available.
+      </div>
 
-          <mat-card *ngIf="studyHistoryCourses?.length">
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Subject</th>
-                    <th>ESPB</th>
-                    <th>Attempts</th>
-                    <th>Final Points</th>
-                    <th>Grade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let course of studyHistoryCourses">
-                    <td>{{ course.subjectName ?? '—' }}</td>
-                    <td>{{ course.espb ?? '—' }}</td>
-                    <td>{{ course.attempts ?? '—' }}</td>
-                    <td>{{ course.finalPoints ?? '—' }}</td>
-                    <td>{{ course.finalGrade ?? '—' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </mat-card>
-        </div>
-      </mat-tab>
+      <!-- Passed Exams -->
+      <h5 *ngIf="studentDto.passedExams?.length">Passed Exams</h5>
+      <table *ngIf="studentDto.passedExams?.length" class="table table-sm">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>ESPB</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pe of studentDto.passedExams">
+            <td>{{ pe.subjectName }}</td>
+            <td>{{ pe.espb }}</td>
+            <td>{{ pe.grade }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Exam Attempts -->
+      <h5 class="mt-4" *ngIf="studentDto.examAttempts?.length">Exam Attempts</h5>
+      <table *ngIf="studentDto.examAttempts?.length" class="table table-sm">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>ESPB</th>
+            <th>Points</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let att of studentDto.examAttempts">
+            <td>{{ att.subjectName }}</td>
+            <td>{{ att.espb }}</td>
+            <td>{{ att.points }}</td>
+            <td>
+              <span [ngClass]="att.points >= 15 ? 'text-success' : 'text-danger'">
+                {{ att.points >= 15 ? 'Passed' : 'Failed' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card>
+  </div>
+</mat-tab>
+
     </mat-tab-group>
 
   </ng-container>
