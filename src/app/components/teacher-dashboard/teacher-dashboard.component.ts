@@ -35,9 +35,7 @@ export class TeacherDashboardComponent implements OnInit {
   tableDisplayedColumns = ['name', 'file'];
   tableColumnLabels = { name: 'Instrument', file: 'File' };
   tableHiddenKeys = ['id', 'deleted', 'evaluations'];
-  tableColumnRenderers = {
-    file: (row: any) => row?.file?.name || '—'
-  };
+  tableColumnRenderers = { file: (row: any) => row?.file?.name || '—' };
 
   studentFilters = {
     name: '',
@@ -60,9 +58,10 @@ export class TeacherDashboardComponent implements OnInit {
   };
 
   selectedStudentProfile: any | null = null;
-
   loading = false;
   error: string | null = null;
+
+  globalSearch = false;
 
   constructor(
     private dynamic: DynamicService,
@@ -77,7 +76,6 @@ export class TeacherDashboardComponent implements OnInit {
       return;
     }
     this.loadDashboard(teacherId);
-
     this.evalInstrQuestions$ = this.questionService.getEvaluationInstrumentQuestions();
   }
 
@@ -104,9 +102,6 @@ export class TeacherDashboardComponent implements OnInit {
   }
 
   searchStudents(): void {
-    const teacherId = this.getLoggedTeacherId();
-    if (!teacherId) return;
-
     const params = new URLSearchParams();
     const f = this.studentFilters;
     if (f.name?.trim()) params.set('name', f.name.trim());
@@ -116,12 +111,22 @@ export class TeacherDashboardComponent implements OnInit {
     if (f.maxAvg != null) params.set('maxAvg', String(f.maxAvg));
 
     this.studentsLoading = true;
-    this.dynamic.getByPath<any[]>(`teacher/${teacherId}/students?` + params.toString())
+
+    let path: string;
+    if (this.globalSearch) {
+      path = `students/search?${params.toString()}`;
+    } else {
+      const teacherId = this.getLoggedTeacherId();
+      if (!teacherId) return;
+      path = `teacher/${teacherId}/students?${params.toString()}`;
+    }
+
+    this.dynamic.getByPath<any[]>(path)
       .pipe(finalize(() => this.studentsLoading = false))
       .subscribe({
         next: (list) => {
           this.students = list ?? [];
-          this.selectedStudentProfile = null; // reset detail
+          this.selectedStudentProfile = null;
         },
         error: (err) => {
           console.error('Student search failed', err);
