@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { GenericTableComponent } from '../../dynamic-components/generic-table/generic-table.component';
 import { DynamicService } from '../../service/dynamic-service/dynamic.service';
 import { ViewTableComponent } from '../../dynamic-components/view-table/view-table.component';
 import { HomeComponent } from '../home/home.component';
@@ -19,9 +18,24 @@ export class UniversityComponent implements OnInit {
 
   constructor(private dynamicService: DynamicService) {}
 
-  ngOnInit(): void {
-    this.dynamicService.getAll<any>('university').subscribe(data => {
-      this.universityData = Array.isArray(data) ? data : [data];
-    });
-  }
+ngOnInit(): void {
+  this.dynamicService.getAll<any>('university').subscribe(data => {
+    const universities = Array.isArray(data) ? data : [data];
+
+    this.universityData = universities.map(u => ({
+      ...u,
+      addresses: u.addresses?.map(
+        (a: any) => `${a.address} ${a.number}, ${a.city}, ${a.country}`
+      ).join(' | ') || 'No addresses',
+
+      faculties: u.faculties?.map(
+        (f: any) =>
+          `${f.name} (${f.addresses?.map((a: any) =>
+            `${a.address} ${a.number}, ${a.city}, ${a.country}`
+          ).join(' | ') || 'No addresses'})`
+      ).join(' | ') || 'No faculties'
+    }));
+  });
+}
+
 }
