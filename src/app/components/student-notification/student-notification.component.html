@@ -1,0 +1,9 @@
+    <div class="notifications">
+      <h3>Notifications</h3>
+      <ul>
+        <li *ngFor="let n of notifications">
+          <strong>{{n.title}}</strong> - {{n.content}} <br>
+          <small>{{n.timePosted | date:'short'}}</small>
+        </li>
+      </ul>
+    </div>
