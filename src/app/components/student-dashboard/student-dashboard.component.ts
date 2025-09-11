@@ -27,6 +27,7 @@ import { NotificationService } from '../../service/notification-service/notifica
 export class StudentDashboardComponent implements OnInit {
   studentDto: any | null = null;
   notifications: any[] = [];
+  upcomingExams: any[] = [];  
   loading = false;
   error: string | null = null;
 
@@ -36,7 +37,7 @@ export class StudentDashboardComponent implements OnInit {
     private dynamic: DynamicService,
     private loginService: LoginService,
     private notifService: NotificationService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const studentId = this.getLoggedStudentId();
@@ -44,13 +45,14 @@ export class StudentDashboardComponent implements OnInit {
       this.error = 'Student ID not found in JWT token.';
       return;
     }
+
     this.loadDashboard(studentId);
+    this.loadUpcomingExams(studentId);
 
     this.dynamic.getById<any>('notifications/student', studentId)
       .subscribe(list => {
         this.notifications = list;
       });
-
   }
 
   private getLoggedStudentId(): number | null {
@@ -118,9 +120,9 @@ export class StudentDashboardComponent implements OnInit {
             dashboard.averageGrade =
               validGrades.length > 0
                 ? (
-                  validGrades.reduce((a: number, b: number) => a + b, 0) /
-                  validGrades.length
-                ).toFixed(2)
+                    validGrades.reduce((a: number, b: number) => a + b, 0) /
+                    validGrades.length
+                  ).toFixed(2)
                 : null;
           } else {
             dashboard.averageGrade = null;
@@ -132,6 +134,47 @@ export class StudentDashboardComponent implements OnInit {
           console.error('Failed to load student dashboard', err);
           this.error = err?.error?.message || err?.message || 'Failed to load student dashboard';
         },
+      });
+  }
+
+  private loadUpcomingExams(studentId: number): void {
+    this.dynamic.getById<any>('students/upcoming-exams', studentId)
+      .subscribe({
+        next: (list) => {
+          this.upcomingExams = list.map((exam: any) => ({
+            ...exam,
+            applied: exam.applied ?? false
+          }));
+        },
+        error: (err) => {
+          console.error('Failed to load upcoming exams', err);
+        }
+      });
+  }
+
+  applyForExam(evaluationId: number): void {
+    const activeEnrollmentId = this.studentDto?.enrollments?.[0]?.id;
+    if (!activeEnrollmentId) {
+      this.error = 'No active enrollment found.';
+      return;
+    }
+
+    const payload = {
+      studentInYearId: activeEnrollmentId,
+      knowledgeEvaluationId: evaluationId
+    };
+
+    this.dynamic.create<any>('exam-applications', payload)
+      .subscribe({
+        next: () => {
+          const exam = this.upcomingExams.find((e) => e.id === evaluationId);
+          if (exam) exam.applied = true; 
+          alert('Successfully applied for exam.');
+        },
+        error: (err) => {
+          console.error(err);
+          this.error = err?.error?.message || 'Failed to apply for exam';
+        }
       });
   }
 }
