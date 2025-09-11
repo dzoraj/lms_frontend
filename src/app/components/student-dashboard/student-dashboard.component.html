@@ -18,6 +18,7 @@
     </section>
 
     <mat-tab-group>
+      <!-- Enrollments -->
       <mat-tab label="Enrollments">
         <div class="mt-3">
           <div *ngIf="!studentDto.enrollments?.length" class="text-muted">
@@ -45,62 +46,106 @@
         </div>
       </mat-tab>
 
-<mat-tab label="Subjects & Exams">
-  <div class="mt-3">
-    <mat-card>
-      <div *ngIf="!studentDto.examAttempts?.length && !studentDto.passedExams?.length" 
-           class="text-muted">
-        No exam data available.
-      </div>
+      <!-- Subjects & Exams -->
+      <mat-tab label="Subjects & Exams">
+        <div class="mt-3">
+          <mat-card>
+            <div *ngIf="!studentDto.examAttempts?.length && !studentDto.passedExams?.length" class="text-muted">
+              No exam data available.
+            </div>
 
-      <!-- Passed Exams -->
-      <h5 *ngIf="studentDto.passedExams?.length">Passed Exams</h5>
-      <table *ngIf="studentDto.passedExams?.length" class="table table-sm">
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>ESPB</th>
-            <th>Grade</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let pe of studentDto.passedExams">
-            <td>{{ pe.subjectName }}</td>
-            <td>{{ pe.espb }}</td>
-            <td>{{ pe.grade }}</td>
-          </tr>
-        </tbody>
-      </table>
+            <!-- Passed Exams -->
+            <h3>GRADES 6–10 / 60-POINT SYSTEM. PASS = 31/60</h3>
+            <table *ngIf="studentDto.passedExams?.length" class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>ESPB</th>
+                  <th>Total Points</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pe of studentDto.passedExams">
+                  <td>{{ pe.subjectName }}</td>
+                  <td>{{ pe.espb }}</td>
+                  <td>{{ pe.points }}</td>
+                  <td>{{ pe.grade }}</td>
+                </tr>
+              </tbody>
+            </table>
 
-      <!-- Exam Attempts -->
-      <h5 class="mt-4" *ngIf="studentDto.examAttempts?.length">Exam Attempts</h5>
-      <table *ngIf="studentDto.examAttempts?.length" class="table table-sm">
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>ESPB</th>
-            <th>Points</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let att of studentDto.examAttempts">
-            <td>{{ att.subjectName }}</td>
-            <td>{{ att.espb }}</td>
-            <td>{{ att.points }}</td>
-            <td>
-              <span [ngClass]="att.points >= 15 ? 'text-success' : 'text-danger'">
-                {{ att.points >= 15 ? 'Passed' : 'Failed' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </mat-card>
-  </div>
-</mat-tab>
+            <!-- Exam Attempts -->
+            <h3>20 POINTS per test. PASS = 10/20 per test</h3>
+            <table *ngIf="studentDto.examAttempts?.length" class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>ESPB</th>
+                  <th>Test Points</th>
+                  <th>Test Status</th>
+                  <th>Total (Subject)</th>
+                  <th>Subject Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let att of studentDto.examAttempts">
+                  <td>{{ att.subjectName }}</td>
+                  <td>{{ att.espb }}</td>
+
+                  <td>{{ att.points }}</td>
+                  <td>
+                    <span [ngClass]="att.testPassed ? 'text-success' : 'text-danger'">
+                      {{ att.testPassed ? 'Passed' : 'Failed' }}
+                    </span>
+                  </td>
+
+                  <td>{{ att.totalPoints }}</td>
+                  <td>
+                    <span [ngClass]="att.subjectPassed ? 'text-success' : 'text-danger'">
+                      {{ att.subjectPassed ? 'Passed' : 'Failed' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </mat-card>
+        </div>
+      </mat-tab>
+      <mat-tab label="Subjects">
+        <div class="mt-3">
+          <mat-card>
+            <div *ngIf="!studentDto.attendingSubjects?.length" class="text-muted">
+              No attending subjects found.
+            </div>
+                <h3>CLICK ON SUBJECT FOR MORE DETAIL</h3>
+
+            <table *ngIf="studentDto.attendingSubjects?.length" class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>ESPB</th>
+                  <th>Lectures</th>
+                  <th>Labs</th>
+                  <th>Mandatory</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let subj of studentDto.attendingSubjects" [routerLink]="['/subject', subj.subjectId]"
+                  style="cursor: pointer;">
+                  <td class="text-primary">{{ subj.name }}</td>
+                  <td>{{ subj.espb }}</td>
+                  <td>{{ subj.lectureCount }}</td>
+                  <td>{{ subj.labCount }}</td>
+                  <td>{{ subj.mandatory ? 'Yes' : 'No' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </mat-card>
+        </div>
+      </mat-tab>
+
 
     </mat-tab-group>
-
   </ng-container>
 </div>
