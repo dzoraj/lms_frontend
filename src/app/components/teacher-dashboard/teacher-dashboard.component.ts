@@ -63,11 +63,16 @@ export class TeacherDashboardComponent implements OnInit {
 
   globalSearch = false;
 
+  syllabus: any[] = [];
+  selectedSubject: any | null = null;
+  newOutcome: string = '';
+  syllabusLoading = false;
+
   constructor(
     private dynamic: DynamicService,
     private loginService: LoginService,
     public questionService: QuestionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const teacherId = this.getLoggedTeacherId();
@@ -149,4 +154,61 @@ export class TeacherDashboardComponent implements OnInit {
         error: (err) => console.error('Profile load failed', err)
       });
   }
+  loadSyllabus(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
+
+    this.syllabusLoading = true;
+    this.dynamic
+      .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/syllabus`)
+      .pipe(finalize(() => (this.syllabusLoading = false)))
+      .subscribe({
+        next: (list) => {
+          this.syllabus = list ?? [];
+          this.selectedSubject = this.subjects.find((s) => s.id === subjectId) || null;
+        },
+        error: (err) => {
+          console.error('Failed to load syllabus', err);
+        },
+      });
+  }
+
+  saveOutcome(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId || !this.newOutcome.trim()) return;
+
+    const payload = { description: this.newOutcome };
+    this.dynamic
+      .create<any>(`teacher/${teacherId}/subjects/${subjectId}/syllabus`, payload)
+      .subscribe({
+        next: (res) => {
+          this.syllabus.push(res);
+          this.newOutcome = '';
+        },
+        error: (err) => {
+          console.error('Failed to save outcome', err);
+        },
+      });
+  }
+  deleteOutcome(subjectId: number, outcomeId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
+
+    this.dynamic
+      .delete(`teacher/${teacherId}/subjects/${subjectId}/syllabus`, outcomeId)
+      .subscribe({
+        next: () => {
+          this.syllabus = this.syllabus.filter(lo => lo.id !== outcomeId);
+        },
+        error: (err) => {
+          console.error('Failed to delete outcome', err);
+        },
+      });
+  }
+
+
+
+
+
+
 }
