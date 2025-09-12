@@ -78,6 +78,13 @@ export class TeacherDashboardComponent implements OnInit {
   notifications: any[] = [];
   newNotification: { title: string; content: string } = { title: '', content: '' };
   notificationsLoading = false;
+  examApplications: any[] = [];
+  selectedExamApp: any | null = null;
+  examAppsLoading = false;
+
+  gradeForm = { points: 0, note: '' };
+  gradeSuccess: string | null = null;
+
 
   constructor(
     private dynamic: DynamicService,
@@ -323,4 +330,55 @@ export class TeacherDashboardComponent implements OnInit {
         },
       });
   }
+  loadExamApplications(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
+
+    this.examAppsLoading = true;
+    this.dynamic
+      .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/examApplications`)
+      .pipe(finalize(() => this.examAppsLoading = false))
+      .subscribe({
+        next: (apps) => {
+          this.examApplications = apps ?? [];
+          this.selectedSubject = this.subjects.find(s => s.id === subjectId) || null;
+        },
+        error: (err) => console.error('Failed to load exam applications', err),
+      });
+  }
+
+  openGradeEntry(app: any): void {
+    this.selectedExamApp = app;
+    this.gradeForm = { points: 0, note: '' };
+    this.gradeSuccess = null;
+  }
+
+  submitGrade(app: any): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
+    if (this.gradeForm.points <= 0) {
+      alert("Points must be greater than 0.");
+      return;
+    }
+
+    this.dynamic
+      .create<any>(
+        `teacher/${teacherId}/examApplication/${app.id}/grade?points=${this.gradeForm.points}&note=${encodeURIComponent(this.gradeForm.note || '')}`,
+        {}
+      )
+      .subscribe({
+        next: () => {
+          this.gradeSuccess = 'Grade successfully saved!';
+          setTimeout(() => (this.gradeSuccess = null), 3000);
+          this.selectedExamApp = null;
+          this.loadExamApplications(this.selectedSubject.id);
+        },
+        error: (err) => {
+          console.error('Failed to save grade', err);
+          alert(err?.error?.message || "Failed to save grade");
+        },
+      });
+  }
+
+
 }
