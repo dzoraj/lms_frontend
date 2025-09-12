@@ -75,6 +75,10 @@ export class TeacherDashboardComponent implements OnInit {
   sessionLoading = false;
   selectedOutcomes: number[] = [];
 
+  notifications: any[] = [];
+  newNotification: { title: string; content: string } = { title: '', content: '' };
+  notificationsLoading = false;
+
   constructor(
     private dynamic: DynamicService,
     private loginService: LoginService,
@@ -251,20 +255,20 @@ export class TeacherDashboardComponent implements OnInit {
       });
   }
 
-assignOutcomesToSession(subjectId: number, sessionId: number): void {
-  const teacherId = this.getLoggedTeacherId();
-  if (!teacherId) return;
+  assignOutcomesToSession(subjectId: number, sessionId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
 
-  this.dynamic
-    .create<any>(`teacher/${teacherId}/subjects/${subjectId}/sessions/${sessionId}/outcomes`, this.selectedOutcomes)
-    .subscribe({
-      next: (session) => {
-        this.sessionOutcomes = session.learningOutcomeIds ?? [];
-        this.successMessage = 'Outcomes successfully assigned!';
-        setTimeout(() => this.successMessage = null, 3000); 
-      },
-      error: (err) => console.error("Failed to assign outcomes", err),
-    });
+    this.dynamic
+      .create<any>(`teacher/${teacherId}/subjects/${subjectId}/sessions/${sessionId}/outcomes`, this.selectedOutcomes)
+      .subscribe({
+        next: (session) => {
+          this.sessionOutcomes = session.learningOutcomeIds ?? [];
+          this.successMessage = 'Outcomes successfully assigned!';
+          setTimeout(() => this.successMessage = null, 3000);
+        },
+        error: (err) => console.error("Failed to assign outcomes", err),
+      });
   }
 
   toggleOutcomeSelection(outcomeId: number): void {
@@ -273,5 +277,50 @@ assignOutcomesToSession(subjectId: number, sessionId: number): void {
     } else {
       this.selectedOutcomes.push(outcomeId);
     }
+  }
+
+  loadNotifications(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
+
+    this.notificationsLoading = true;
+    this.dynamic
+      .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/notifications`)
+      .pipe(finalize(() => (this.notificationsLoading = false)))
+      .subscribe({
+        next: (list) => {
+          this.notifications = list ?? [];
+          this.selectedSubject = this.subjects.find((s) => s.id === subjectId) || null;
+        },
+        error: (err) => {
+          console.error('Failed to load notifications', err);
+        },
+      });
+  }
+
+  createNotification(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId || !this.newNotification.title.trim()) return;
+
+    const payload = {
+      title: this.newNotification.title,
+      content: this.newNotification.content,
+      courseRealization: { id: subjectId },
+      teacherOnCourse: { id: 1 }
+    };
+
+    this.dynamic
+      .create<any>(`teacher/${teacherId}/subjects/${subjectId}/notifications`, payload)
+      .subscribe({
+        next: (res) => {
+          this.notifications.unshift(res);
+          this.newNotification = { title: '', content: '' };
+          this.successMessage = 'Notification posted!';
+          setTimeout(() => this.successMessage = null, 3000);
+        },
+        error: (err) => {
+          console.error('Failed to create notification', err);
+        },
+      });
   }
 }

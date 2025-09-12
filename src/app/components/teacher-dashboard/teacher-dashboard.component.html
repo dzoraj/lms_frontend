@@ -259,6 +259,44 @@
           </div>
         </div>
       </mat-tab>
+      <mat-tab label="Notifications">
+        <div class="mt-3">
+          <h5>Select a subject:</h5>
+          <ul class="list-group mb-3">
+            <li *ngFor="let subj of subjects" class="list-group-item list-group-item-action" style="cursor:pointer"
+              (click)="loadNotifications(subj.id)">
+              {{ subj.name }} ({{ subj.espb }} ESPB)
+            </li>
+          </ul>
+
+          <div *ngIf="selectedSubject">
+            <h5>Notifications for {{ selectedSubject.name }}</h5>
+
+            <div *ngIf="notificationsLoading" class="alert alert-info">Loading…</div>
+
+            <ul class="list-group mb-3" *ngIf="notifications.length > 0; else noNotifications">
+              <li *ngFor="let n of notifications" class="list-group-item">
+                <strong>{{ n.title }}</strong>
+                <p>{{ n.content }}</p>
+                <small class="text-muted">Posted: {{ n.timePosted | date:'short' }}</small>
+              </li>
+            </ul>
+            <ng-template #noNotifications>
+              <p class="text-muted">No notifications yet.</p>
+            </ng-template>
+
+            <div class="card mt-3">
+              <div class="card-body">
+                <h6>Create New Notification</h6>
+                <input class="form-control mb-2" [(ngModel)]="newNotification.title" placeholder="Title">
+                <textarea class="form-control mb-2" [(ngModel)]="newNotification.content"
+                  placeholder="Content"></textarea>
+                <button class="btn btn-primary" (click)="createNotification(selectedSubject.id)">Post</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
 
 
       <mat-tab label="Profile">
