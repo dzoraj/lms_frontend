@@ -60,6 +60,7 @@ export class TeacherDashboardComponent implements OnInit {
   selectedStudentProfile: any | null = null;
   loading = false;
   error: string | null = null;
+  successMessage: string | null = null;
 
   globalSearch = false;
 
@@ -67,6 +68,12 @@ export class TeacherDashboardComponent implements OnInit {
   selectedSubject: any | null = null;
   newOutcome: string = '';
   syllabusLoading = false;
+
+  sessions: any[] = [];
+  selectedSession: any | null = null;
+  sessionOutcomes: any[] = [];
+  sessionLoading = false;
+  selectedOutcomes: number[] = [];
 
   constructor(
     private dynamic: DynamicService,
@@ -154,6 +161,7 @@ export class TeacherDashboardComponent implements OnInit {
         error: (err) => console.error('Profile load failed', err)
       });
   }
+
   loadSyllabus(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
@@ -190,6 +198,7 @@ export class TeacherDashboardComponent implements OnInit {
         },
       });
   }
+
   deleteOutcome(subjectId: number, outcomeId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
@@ -206,9 +215,63 @@ export class TeacherDashboardComponent implements OnInit {
       });
   }
 
+  loadSessions(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
 
+    this.selectedSubject = this.subjects.find((s) => s.id === subjectId) || null;
 
+    this.sessionLoading = true;
+    this.dynamic
+      .getByPath<any[]>(`teachingSession?subjectId=${subjectId}`)
+      .pipe(finalize(() => (this.sessionLoading = false)))
+      .subscribe({
+        next: (list) => {
+          this.sessions = list ?? [];
+          this.selectedSession = null;
+          this.sessionOutcomes = [];
+        },
+        error: (err) => console.error("Failed to load sessions", err),
+      });
+  }
 
+  loadSessionOutcomes(subjectId: number, sessionId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId || !subjectId) return;
 
+    this.dynamic
+      .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/sessions/${sessionId}/outcomes`)
+      .subscribe({
+        next: (list) => {
+          this.sessionOutcomes = list ?? [];
+          this.selectedSession = this.sessions.find((s) => s.id === sessionId) || null;
+          this.selectedOutcomes = this.sessionOutcomes.map((lo) => lo.id);
+        },
+        error: (err) => console.error("Failed to load session outcomes", err),
+      });
+  }
 
+assignOutcomesToSession(subjectId: number, sessionId: number): void {
+  const teacherId = this.getLoggedTeacherId();
+  if (!teacherId) return;
+
+  this.dynamic
+    .create<any>(`teacher/${teacherId}/subjects/${subjectId}/sessions/${sessionId}/outcomes`, this.selectedOutcomes)
+    .subscribe({
+      next: (session) => {
+        this.sessionOutcomes = session.learningOutcomeIds ?? [];
+        this.successMessage = 'Outcomes successfully assigned!';
+        setTimeout(() => this.successMessage = null, 3000); 
+      },
+      error: (err) => console.error("Failed to assign outcomes", err),
+    });
+  }
+
+  toggleOutcomeSelection(outcomeId: number): void {
+    if (this.selectedOutcomes.includes(outcomeId)) {
+      this.selectedOutcomes = this.selectedOutcomes.filter((id) => id !== outcomeId);
+    } else {
+      this.selectedOutcomes.push(outcomeId);
+    }
+  }
 }

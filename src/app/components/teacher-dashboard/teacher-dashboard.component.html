@@ -208,6 +208,58 @@
           </div>
         </div>
       </mat-tab>
+      <mat-tab label="Schedule">
+        <div class="mt-3">
+          <h5>Select a subject:</h5>
+          <ul class="list-group mb-3">
+            <li *ngFor="let subj of subjects" class="list-group-item list-group-item-action" style="cursor:pointer"
+              (click)="loadSessions(subj.id)">
+              {{ subj.name }} ({{ subj.espb }} ESPB)
+            </li>
+          </ul>
+
+          <!-- Show selected subject -->
+          <div *ngIf="selectedSubject">
+            <h5>Schedule for {{ selectedSubject.name }}</h5>
+          </div>
+
+          <div *ngIf="sessions.length > 0">
+            <h6>Sessions</h6>
+            <ul class="list-group mb-3">
+              <li *ngFor="let sess of sessions" class="list-group-item list-group-item-action" style="cursor:pointer"
+                (click)="loadSessionOutcomes(selectedSubject?.id, sess.id)">
+                Session #{{ sess.id }} —
+                {{ sess.startTime | date:'short' }} - {{ sess.endTime | date:'short' }}
+              </li>
+            </ul>
+          </div>
+
+          <div *ngIf="selectedSession">
+            <h6>Assign Outcomes to Session #{{ selectedSession.id }}</h6>
+
+            <div *ngIf="syllabus.length > 0; else noOutcomesForSession">
+              <ul class="list-group">
+                <li *ngFor="let lo of syllabus" class="list-group-item">
+                  <input type="checkbox" [checked]="selectedOutcomes.includes(lo.id)"
+                    (change)="toggleOutcomeSelection(lo.id)">
+                  {{ lo.description }}
+                </li>
+              </ul>
+              <button class="btn btn-primary mt-2"
+                (click)="assignOutcomesToSession(selectedSubject.id, selectedSession.id)">
+                Save Session Outcomes
+              </button>
+              <div *ngIf="successMessage" class="alert alert-success mt-2">
+                {{ successMessage }}
+              </div>
+            </div>
+            <ng-template #noOutcomesForSession>
+              <p class="text-muted">No outcomes available for this subject.</p>
+            </ng-template>
+          </div>
+        </div>
+      </mat-tab>
+
 
       <mat-tab label="Profile">
         <div class="mt-3">
