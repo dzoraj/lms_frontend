@@ -31,8 +31,6 @@ export class StudentDashboardComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  private readonly PASS_THRESHOLD_60 = 31;
-
   constructor(
     private dynamic: DynamicService,
     private loginService: LoginService,
@@ -60,15 +58,6 @@ export class StudentDashboardComponent implements OnInit {
     return user?.id ?? null;
   }
 
-  private calculateGrade(points: number): number | null {
-    if (points < this.PASS_THRESHOLD_60) return null;
-    if (points <= 36) return 6;
-    if (points <= 42) return 7;
-    if (points <= 48) return 8;
-    if (points <= 54) return 9;
-    return 10;
-  }
-
   private loadDashboard(studentId: number): void {
     this.loading = true;
     this.error = null;
@@ -77,57 +66,6 @@ export class StudentDashboardComponent implements OnInit {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (dashboard) => {
-          const attempts = dashboard?.examAttempts ?? [];
-          const grouped: Record<string, { total: number; tests: number[] }> = {};
-
-          attempts.forEach((att: any) => {
-            const key = (att.subjectId ?? att.subjectName) as string;
-            const pts = Number(att.points ?? 0);
-            if (!grouped[key]) grouped[key] = { total: 0, tests: [] };
-            grouped[key].total += pts;
-            grouped[key].tests.push(pts);
-          });
-
-          dashboard.examAttempts = attempts.map((att: any) => {
-            const key = (att.subjectId ?? att.subjectName) as string;
-            const info = grouped[key];
-            const totalPoints = info.total;
-            const subjectPassed =
-              totalPoints >= this.PASS_THRESHOLD_60 &&
-              info.tests.every((t) => t >= 10);
-            const testPassed = att.points >= 10;
-            return { ...att, totalPoints, subjectPassed, testPassed };
-          });
-
-          if (dashboard?.passedExams?.length) {
-            dashboard.passedExams = dashboard.passedExams.map((pe: any) => {
-              const key = (pe.subjectId ?? pe.subjectName) as string;
-              const subjectInfo = grouped[key];
-              let pts: number = Number(pe.points ?? 0);
-              if ((!pts || pts === 0) && subjectInfo) pts = subjectInfo.total;
-              const subjectPassed =
-                subjectInfo &&
-                subjectInfo.total >= this.PASS_THRESHOLD_60 &&
-                subjectInfo.tests.every((t) => t >= 10);
-              const grade = subjectPassed ? this.calculateGrade(pts) : null;
-              return { ...pe, points: pts, grade: grade ?? 'Fail' };
-            });
-
-            const validGrades: number[] = dashboard.passedExams
-              .map((pe: any) => (typeof pe.grade === 'number' ? pe.grade : null))
-              .filter((g: number | null): g is number => g !== null && g >= 6 && g <= 10);
-
-            dashboard.averageGrade =
-              validGrades.length > 0
-                ? (
-                    validGrades.reduce((a: number, b: number) => a + b, 0) /
-                    validGrades.length
-                  ).toFixed(2)
-                : null;
-          } else {
-            dashboard.averageGrade = null;
-          }
-
           this.studentDto = dashboard;
         },
         error: (err) => {
@@ -177,5 +115,4 @@ export class StudentDashboardComponent implements OnInit {
         }
       });
   }
-  
 }

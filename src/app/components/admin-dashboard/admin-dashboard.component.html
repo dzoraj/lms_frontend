@@ -26,25 +26,30 @@
     <app-user-role-manager></app-user-role-manager>
   </div>
 
-  <div class="entity-workspace" *ngIf="openEntities.length">
-    <div class="entity-pane" *ngFor="let entity of openEntities">
-      <div class="pane-header">
-        <h3>{{ entity.title }}</h3>
+<div class="entity-workspace" *ngIf="openEntities.length">
+  <div class="entity-pane" *ngFor="let entity of openEntities">
+    <div class="pane-header">
+      <h3>{{ entity.title }}</h3>
+      <div>
+        <button class="primary-btn" (click)="handleAdd(entity.key)">+ Add</button>
         <button class="close-btn" (click)="closeEntity(entity.key)">✖</button>
       </div>
-
-      <app-generic-table
-        *ngIf="entity.mode === 'table'"
-        [data]="entity.data"
-        (editEvent)="handleEdit(entity.key, $event)"
-      ></app-generic-table>
-
-      <app-dynamic-form
-        *ngIf="entity.mode === 'form'"
-        [questions]="entity.formQuestions"
-        [model]="entity.formModel"
-        (submitEvent)="handleFormSubmit(entity.key, $event)"
-      ></app-dynamic-form>
     </div>
+
+    <app-generic-table
+      *ngIf="entity.mode === 'table'"
+      [data]="entity.data"
+      (editEvent)="handleEdit(entity.key, $event)"
+      (removeEvent)="handleDelete(entity.key, $event)"
+    ></app-generic-table>
+
+    <app-dynamic-form
+      *ngIf="entity.mode === 'form'"
+      [questions]="entity.formQuestions || []"
+      [model]="entity.formModel"
+      (submitEvent)="handleFormSubmit(entity.key, $event)"
+    ></app-dynamic-form>
   </div>
+</div>
+
 </div>

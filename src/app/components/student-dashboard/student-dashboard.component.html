@@ -55,7 +55,7 @@
             </div>
 
             <!-- Passed Exams -->
-            <h3>GRADES 6–10 / 60-POINT SYSTEM. PASS = 31/60</h3>
+            <h3>Final Grades</h3>
             <table *ngIf="studentDto.passedExams?.length" class="table table-sm">
               <thead>
                 <tr>
@@ -70,40 +70,28 @@
                   <td>{{ pe.subjectName }}</td>
                   <td>{{ pe.espb }}</td>
                   <td>{{ pe.points }}</td>
-                  <td>{{ pe.grade }}</td>
+                  <td>{{ pe.grade ?? 'Fail' }}</td>
                 </tr>
               </tbody>
             </table>
 
             <!-- Exam Attempts -->
-            <h3>20 POINTS per test. PASS = 10/20 per test</h3>
+            <h3>Exam Attempts</h3>
             <table *ngIf="studentDto.examAttempts?.length" class="table table-sm">
               <thead>
                 <tr>
                   <th>Subject</th>
-                  <th>ESPB</th>
-                  <th>Test Points</th>
-                  <th>Test Status</th>
-                  <th>Total (Subject)</th>
-                  <th>Subject Status</th>
+                  <th>Points</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let att of studentDto.examAttempts">
                   <td>{{ att.subjectName }}</td>
-                  <td>{{ att.espb }}</td>
-
-                  <td>{{ att.points }}</td>
+                  <td>{{ att.points }} / {{ att.maxPoints }}</td>
                   <td>
                     <span [ngClass]="att.testPassed ? 'text-success' : 'text-danger'">
                       {{ att.testPassed ? 'Passed' : 'Failed' }}
-                    </span>
-                  </td>
-
-                  <td>{{ att.totalPoints }}</td>
-                  <td>
-                    <span [ngClass]="att.subjectPassed ? 'text-success' : 'text-danger'">
-                      {{ att.subjectPassed ? 'Passed' : 'Failed' }}
                     </span>
                   </td>
                 </tr>
@@ -112,6 +100,8 @@
           </mat-card>
         </div>
       </mat-tab>
+
+      <!-- Subjects -->
       <mat-tab label="Subjects">
         <div class="mt-3">
           <mat-card>
@@ -144,6 +134,8 @@
           </mat-card>
         </div>
       </mat-tab>
+
+      <!-- Notifications -->
       <mat-tab label="Notifications">
         <div class="mt-3">
           <mat-card>
@@ -161,6 +153,8 @@
           </mat-card>
         </div>
       </mat-tab>
+
+      <!-- Upcoming Exams -->
       <mat-tab label="Upcoming Exams">
         <div class="mt-3">
           <mat-card>
@@ -195,8 +189,6 @@
           </mat-card>
         </div>
       </mat-tab>
-
-
 
     </mat-tab-group>
   </ng-container>

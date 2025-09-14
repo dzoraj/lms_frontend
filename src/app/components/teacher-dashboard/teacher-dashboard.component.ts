@@ -305,31 +305,30 @@ export class TeacherDashboardComponent implements OnInit {
       });
   }
 
-  createNotification(subjectId: number): void {
-    const teacherId = this.getLoggedTeacherId();
-    if (!teacherId || !this.newNotification.title.trim()) return;
+createNotification(subjectId: number): void {
+  const teacherId = this.getLoggedTeacherId();
+  if (!teacherId || !this.newNotification.title.trim()) return;
 
-    const payload = {
-      title: this.newNotification.title,
-      content: this.newNotification.content,
-      courseRealization: { id: subjectId },
-      teacherOnCourse: { id: 1 }
-    };
+  const payload = {
+    title: this.newNotification.title,
+    content: this.newNotification.content
+  };
 
-    this.dynamic
-      .create<any>(`teacher/${teacherId}/subjects/${subjectId}/notifications`, payload)
-      .subscribe({
-        next: (res) => {
-          this.notifications.unshift(res);
-          this.newNotification = { title: '', content: '' };
-          this.successMessage = 'Notification posted!';
-          setTimeout(() => this.successMessage = null, 3000);
-        },
-        error: (err) => {
-          console.error('Failed to create notification', err);
-        },
-      });
-  }
+  this.dynamic
+    .create<any>(`teacher/${teacherId}/subjects/${subjectId}/notifications`, payload)
+    .subscribe({
+      next: (res) => {
+        this.notifications.unshift(res);
+        this.newNotification = { title: '', content: '' };
+        this.successMessage = 'Notification posted!';
+        setTimeout(() => (this.successMessage = null), 3000);
+      },
+      error: (err) => {
+        console.error('Failed to create notification', err);
+      },
+    });
+}
+
   loadExamApplications(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;

@@ -102,16 +102,52 @@ export class AdminDashboardComponent {
       console.warn(`No questions function for ${entity.title}`);
     }
   }
+handleFormSubmit(key: string, submitted: any) {
+  const entity = this.openEntities.find(e => e.key === key);
+  if (!entity) return;
 
-  handleFormSubmit(key: string, updated: any) {
-    const entity = this.openEntities.find(e => e.key === key);
-    if (!entity) return;
+  const request$ = submitted.id
+    ? this.dynamicService.update(entity.endpoint, submitted.id, submitted)
+    : this.dynamicService.create(entity.endpoint, submitted);
 
-    this.dynamicService.update(entity.endpoint, updated.id, updated).subscribe(() => {
-      this.dynamicService.getAll<any>(entity.endpoint).subscribe(data => {
-        entity.data = data;
-        entity.mode = 'table';
-      });
+  request$.subscribe(() => {
+    this.dynamicService.getAll<any>(entity.endpoint).subscribe(data => {
+      entity.data = data;
+      entity.mode = 'table'; 
     });
+  });
+}
+
+  handleAdd(key: string) {
+  const entity = this.openEntities.find(e => e.key === key);
+  if (!entity) return;
+
+  const fnName = `get${entity.title.replace(/\s/g, '')}Questions` as keyof QuestionService;
+  if (typeof this.questionService[fnName] === 'function') {
+    const q$ = (this.questionService[fnName] as any)();
+    if (q$.subscribe) {
+      q$.subscribe((qs: QuestionBase<any>[]) => {
+        entity.formQuestions = qs;
+        entity.formModel = {}; 
+        entity.mode = 'form';
+      });
+    } else {
+      entity.formQuestions = q$;
+      entity.formModel = {};
+      entity.mode = 'form';
+    }
   }
+}
+
+handleDelete(key: string, id: number) {
+  const entity = this.openEntities.find(e => e.key === key);
+  if (!entity) return;
+
+  this.dynamicService.delete(entity.endpoint, id).subscribe(() => {
+    this.dynamicService.getAll<any>(entity.endpoint).subscribe(data => {
+      entity.data = data; 
+    });
+  });
+}
+
 }

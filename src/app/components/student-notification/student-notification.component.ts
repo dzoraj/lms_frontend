@@ -14,9 +14,12 @@ export class StudentNotificationsComponent implements OnInit {
 
   constructor(private notifService: NotificationService) {}
 
-  ngOnInit(): void {
-    this.notifService.getNotifications().subscribe(list => {
-      this.notifications = list;
-    });
-  }
+ngOnInit(): void {
+  this.notifService.getNotifications().subscribe(notification => {
+    if (notification) {
+      this.notifications = [...this.notifications, notification];
+    }
+  });
+}
+
 }
