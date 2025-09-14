@@ -2,15 +2,15 @@
   <app-navbar></app-navbar>
   <h1>Admin Dashboard</h1>
 
+  <!-- Entity Cards -->
   <div class="grid">
-    <!-- Entity Cards -->
-    <a
+    <button
       class="dashboard-card"
       *ngFor="let key of entityKeys"
-      [routerLink]="['/admin-dashboard', getEndpoint(key)]"
+      (click)="openEntity(key)"
     >
       {{ getTitle(key) }}
-    </a>
+    </button>
   </div>
 
   <div class="role-toggle">
@@ -24,5 +24,27 @@
 
   <div *ngIf="showUserRoleManager" class="role-manager-panel">
     <app-user-role-manager></app-user-role-manager>
+  </div>
+
+  <div class="entity-workspace" *ngIf="openEntities.length">
+    <div class="entity-pane" *ngFor="let entity of openEntities">
+      <div class="pane-header">
+        <h3>{{ entity.title }}</h3>
+        <button class="close-btn" (click)="closeEntity(entity.key)">✖</button>
+      </div>
+
+      <app-generic-table
+        *ngIf="entity.mode === 'table'"
+        [data]="entity.data"
+        (editEvent)="handleEdit(entity.key, $event)"
+      ></app-generic-table>
+
+      <app-dynamic-form
+        *ngIf="entity.mode === 'form'"
+        [questions]="entity.formQuestions"
+        [model]="entity.formModel"
+        (submitEvent)="handleFormSubmit(entity.key, $event)"
+      ></app-dynamic-form>
+    </div>
   </div>
 </div>

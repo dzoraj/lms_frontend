@@ -1,3 +1,4 @@
+import { GradingScheme } from '../grading/grading-scheme.model';
 import { StudyYear } from '../student/study-year.model';
 import { LearningOutcome } from './learning-outcome.model';
 
@@ -15,4 +16,6 @@ export interface Subject {
   syllabus?: LearningOutcome[];
   subSubjects?: Subject[];
   parentSubject?: Subject;
+  gradingScheme?: GradingScheme;
+
 }

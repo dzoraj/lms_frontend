@@ -175,5 +175,15 @@ export const ENTITY_CONFIG = {
     endpoint: 'teachingMaterial',
     questionFn: 'getTeachingMaterialQuestions',
     title: 'Teaching Material'
+  },
+  gradingScheme: {
+    endpoint: 'gradingScheme',
+    questionFn: 'getGradingSchemeQuestions',
+    title: 'Grading Scheme'
+  },
+  gradeBoundary: {
+    endpoint: 'gradeBoundary',
+    questionFn: 'getGradeBoundaryQuestions',
+    title: 'Grade Boundary'
   }
 };
