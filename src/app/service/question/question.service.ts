@@ -221,14 +221,28 @@ export class QuestionService {
     return of(questions.sort((a, b) => a.order - b.order));
   }
 
-  getFileQuestions() {
-    const questions: QuestionBase<any>[] = [
-      new TextboxQuestion({ key: 'id', type: 'hidden', order: 0 }),
-      new TextboxQuestion({ key: 'description', label: 'Description', required: true, order: 1 }),
-      new TextboxQuestion({ key: 'url', label: 'File URL', required: true, order: 2 })
-    ];
-    return of(questions.sort((a, b) => a.order - b.order));
-  }
+getFileQuestions() {
+  const questions: QuestionBase<any>[] = [
+    new TextboxQuestion({ key: 'id', type: 'hidden', order: 0 }),
+    new TextboxQuestion({ key: 'description', label: 'Description', required: true, order: 1 }),
+    new TextboxQuestion({ key: 'url', label: 'File URL', required: true, order: 2 }),
+
+    new TextboxQuestion({ key: 'postId', label: 'Post ID', type: 'number', order: 3 }),
+    new TextboxQuestion({ key: 'notificationId', label: 'Notification ID', type: 'number', order: 4 }),
+    new TextboxQuestion({ key: 'messageId', label: 'Message ID', type: 'number', order: 5 }),
+
+    new TextboxQuestion({ 
+      key: 'evaluationInstrumentIds', 
+      label: 'Evaluation Instrument IDs (comma-separated)', 
+      order: 6 
+    }),
+
+    new TextboxQuestion({ key: 'teachingMaterialId', label: 'Teaching Material ID', type: 'number', order: 7 })
+  ];
+
+  return of(questions.sort((a, b) => a.order - b.order));
+}
+
 
   getStudyProgramQuestions() {
     const questions: QuestionBase<any>[] = [

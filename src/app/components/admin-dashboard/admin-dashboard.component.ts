@@ -8,6 +8,7 @@ import { GenericTableComponent } from '../../dynamic-components/generic-table/ge
 import { DynamicFormComponent } from '../../dynamic-components/dynamic-form/dynamic-form.component';
 import { QuestionService } from '../../service/question/question.service';
 import { QuestionBase } from '../../model/questions/question-base';
+import { FileUploadComponent } from '../file-upload/file-upload.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -20,7 +21,8 @@ import { QuestionBase } from '../../model/questions/question-base';
     UserRoleManagerComponent,
     NavbarComponent,
     GenericTableComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    FileUploadComponent
   ],
 })
 export class AdminDashboardComponent {
