@@ -76,20 +76,29 @@ export class AdminDashboardComponent {
         formQuestions: null,
         formModel: null,
         exportBase: this.computeExportBase(String(key), title),
-        exportNeedsAuth: true, 
+        exportNeedsAuth: true,
         idField: 'id'
       });
     });
   }
 
   private computeExportBase(key: string, title: string): string | undefined {
-    const k = key.toLowerCase();
-    const t = title.toLowerCase();
-    if (k.includes('teacher') || t.includes('teacher')) {
+    const text = `${key} ${title}`.toLowerCase();
+
+    if (text.includes('teacher')) {
       return 'http://localhost:8080/api/export/teachers';
     }
-    if (k.includes('student') || t.includes('student')) {
+    if (text.includes('student')) {
       return 'http://localhost:8080/api/export/students';
+    }
+    if (
+      text.includes('evaluation') ||
+      text.includes('knowledge_evaluation') ||
+      text.includes('attempt') ||
+      text.includes('evaluacija') ||
+      text.includes('ispit')
+    ) {
+      return 'http://localhost:8080/api/export/evaluations';
     }
     return undefined;
   }

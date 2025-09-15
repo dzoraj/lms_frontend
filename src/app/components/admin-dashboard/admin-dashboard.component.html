@@ -36,15 +36,14 @@
         </div>
       </div>
 
-  <app-generic-table
-    *ngIf="entity.mode === 'table'"
-    [data]="entity.data"
-    [exportBase]="entity.exportBase"
-    [idField]="entity.idField || 'id'"
-    (editEvent)="handleEdit(entity.key, $event)"
-    (removeEvent)="handleDelete(entity.key, $event)"
-  ></app-generic-table>
-
+      <app-generic-table
+        *ngIf="entity.mode === 'table'"
+        [data]="entity.data"
+        [exportBase]="entity.exportBase"
+        [idField]="entity.idField || 'id'"
+        (editEvent)="handleEdit(entity.key, $event)"
+        (removeEvent)="handleDelete(entity.key, $event)"
+      ></app-generic-table>
 
       <app-dynamic-form
         *ngIf="entity.mode === 'form'"

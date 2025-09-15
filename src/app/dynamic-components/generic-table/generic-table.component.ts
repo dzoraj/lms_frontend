@@ -22,9 +22,9 @@ export class GenericTableComponent implements OnChanges {
   @Output() removeEvent = new EventEmitter<number>();
   @Output() editEvent = new EventEmitter<any>();
 
-  @Input() exportBase?: string;       
+  @Input() exportBase?: string;        
   @Input() idField: string = 'id';     
-  @Input() exportNeedsAuth = true;   
+  @Input() exportNeedsAuth = true;     
 
   columns: string[] = [];
   filteredData: any[] = [];
@@ -144,7 +144,6 @@ export class GenericTableComponent implements OnChanges {
       this.columns.some(col => String(this.getValue(row, col)).toLowerCase().includes(term))
     );
   }
-
 
   openPdf(row: any) {
     this.openExport(row, 'pdf');
