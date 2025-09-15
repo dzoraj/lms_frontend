@@ -442,7 +442,7 @@ getFileQuestions() {
     const questions: QuestionBase<any>[] = [
       new TextboxQuestion({ key: 'id', type: 'hidden', order: 0 }),
       new TextboxQuestion({ key: 'totalPoints', label: 'totalPoints', type: 'text', required: true, order: 1 }),
-      new TextboxQuestion({ key: 'threshold', label: 'threshold', type: 'number', order: 2 })
+      new TextboxQuestion({ key: 'threshold', label: 'threshold', type: 'number', order: 2 }),
     ];
     return of(questions.sort((a, b) => a.order - b.order));
   }
