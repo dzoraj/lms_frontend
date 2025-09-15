@@ -59,4 +59,13 @@ export class DynamicService {
   getSubjectFull(subjectId: number) {
     return this.http.get<any>(`${this.baseUrl}/subject/${subjectId}/full`, this.authHeaders());
   }
+  getByPathBlob(path: string): Observable<Blob> {
+    return this.http.get<Blob>(`${this.baseUrl}/${path}`, {
+      headers: this.authHeaders().headers,
+      responseType: 'blob' as 'json'
+    });
+  }
+
+
+
 }

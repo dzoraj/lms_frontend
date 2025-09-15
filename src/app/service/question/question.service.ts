@@ -257,7 +257,8 @@ getFileQuestions() {
   getStudyYearQuestions() {
     const questions: QuestionBase<any>[] = [
       new TextboxQuestion({ key: 'id', type: 'hidden', order: 0 }),
-      new TextboxQuestion({ key: 'enrollmentDate', label: 'Enrollment Date', type: 'date', required: true, order: 1 })
+      new TextboxQuestion({ key: 'enrollmentDate', label: 'Enrollment Date', type: 'date', required: true, order: 1 }),
+      new TextboxQuestion({ key: 'studyProgramId', label: 'Study Program ID', type: 'number', required: true, order: 2 })
     ];
     return of(questions.sort((a, b) => a.order - b.order));
   }

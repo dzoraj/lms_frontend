@@ -1,1 +1,121 @@
 <app-navbar></app-navbar>
+<div class="sa-dashboard container mt-4">
+    <h2>Student Administration Dashboard</h2>
+
+    <mat-tab-group>
+        <mat-tab label="Enrollments">
+            <div class="mt-3">
+                <form class="row g-2 align-items-end" (ngSubmit)="enrollStudent()">
+                    <div class="col-sm-4">
+                        <label class="form-label">Student</label>
+                        <input type="text" class="form-control" placeholder="Search student by name or index"
+                            [(ngModel)]="selectedStudent" (ngModelChange)="searchStudents($event)"
+                            [matAutocomplete]="auto" name="studentSearch" />
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayStudent"
+                            (optionSelected)="selectStudent($event.option.value)">
+                            <mat-option *ngFor="let s of studentResults" [value]="s">
+                                {{ s.name }} ({{ s.indexNumber || '—' }})
+                            </mat-option>
+                        </mat-autocomplete>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <label class="form-label">Study Year</label>
+                        <select class="form-select" [(ngModel)]="newEnrollment.studyYearId" name="studyYearId" required>
+                            <option [ngValue]="null">Select year</option>
+                            <option *ngFor="let y of studyYears" [value]="y.id">{{ y.enrollmentDate }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label class="form-label">Index Number</label>
+                        <input class="form-control" [(ngModel)]="newEnrollment.indexNumber" name="indexNumber" required>
+                    </div>
+
+                    <div class="col-sm-1 d-grid">
+                        <button class="btn btn-primary" type="submit">Enroll</button>
+                    </div>
+                </form>
+
+                <div *ngIf="success" class="alert alert-success mt-2">{{ success }}</div>
+                <div *ngIf="error" class="alert alert-danger mt-2">{{ error }}</div>
+
+                <hr />
+
+                <h5>Existing Enrollments</h5>
+                <app-generic-table [data]="enrollments"
+                    [displayedColumns]="['id','studentId','studyYearId','indexNumber','enrollmentDate']"
+                    [columnLabels]="{id:'ID', studentId:'Student', studyYearId:'Study Year', indexNumber:'Index', enrollmentDate:'Enrolled'}">
+                </app-generic-table>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="Assign Student Role">
+            <div class="mt-3">
+                <form (ngSubmit)="assignStudentRole()" class="mb-3">
+                    <label>User Search:</label>
+                    <input type="text" class="form-control mb-2" [(ngModel)]="roleUserSearch"
+                        (input)="searchUsersForRole()" name="roleUserSearch" placeholder="Search by name or email..." />
+
+                    <label *ngIf="filteredUsers.length > 0">Select User:</label>
+                    <select class="form-select mb-2" [(ngModel)]="selectedUserId" (ngModelChange)="onUserChange()"
+                        name="selectedUserId" size="5" required>
+                        <option *ngFor="let user of filteredUsers" [ngValue]="user.id">
+                            {{ user.name }} ({{ user.email }})
+                        </option>
+                    </select>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success" [disabled]="!selectedUserId">Assign
+                            Student</button>
+                        <button type="button" class="btn btn-danger" (click)="removeStudentRole()"
+                            [disabled]="!selectedUserId">Remove Student</button>
+                    </div>
+                </form>
+
+                <div *ngIf="roleMessage" class="alert alert-success">{{ roleMessage }}</div>
+                <div *ngIf="roleError" class="alert alert-danger">{{ roleError }}</div>
+
+                <div *ngIf="selectedUserRoles.length > 0">
+                    <h5>Roles for selected user:</h5>
+                    <ul>
+                        <li *ngFor="let role of selectedUserRoles">{{ role }}</li>
+                    </ul>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Documents">
+            <div class="mt-3">
+                <h5>Generate Student Document</h5>
+
+                <div class="mb-3">
+                    <label class="form-label">Student</label>
+                    <input type="text" class="form-control" placeholder="Search student by name or index"
+                        [(ngModel)]="docStudentSearch" (ngModelChange)="searchStudentsForDocs($event)"
+                        [matAutocomplete]="docAuto" name="docStudentSearch" />
+                    <mat-autocomplete #docAuto="matAutocomplete" [displayWith]="displayStudent"
+                        (optionSelected)="selectDocStudent($event.option.value)">
+                        <mat-option *ngFor="let s of docStudentResults" [value]="s">
+                            {{ s.name }} ({{ s.indexNumber || '—' }})
+                        </mat-option>
+                    </mat-autocomplete>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Document Type</label>
+                    <select class="form-select" [(ngModel)]="selectedTemplate" name="selectedTemplate" required>
+                        <option [ngValue]="'student-confirmation'">Regular Student Confirmation</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-secondary" (click)="downloadDocument()"
+                    [disabled]="!selectedDocStudent || !selectedTemplate">
+                    Download PDF
+                </button>
+
+                <div *ngIf="docError" class="alert alert-danger mt-2">{{ docError }}</div>
+            </div>
+        </mat-tab>
+
+    </mat-tab-group>
+</div>
