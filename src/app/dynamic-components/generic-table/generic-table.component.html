@@ -26,6 +26,9 @@
         {{ getValue(row, column) }}
       </td>
       <td>
+        <button *ngIf="exportBase" (click)="openPdf(row)">Open PDF</button>
+        <button *ngIf="exportBase" (click)="openXml(row)">Open XML</button>
+
         <button (click)="remove(row.id)">Remove</button>
         <button (click)="update(row)">Edit</button>
       </td>

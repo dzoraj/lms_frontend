@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { NoDataDirective } from '../../directives/no-data.directive';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-generic-table',
@@ -13,22 +14,24 @@ import { FormsModule } from '@angular/forms';
 export class GenericTableComponent implements OnChanges {
 
   @Input() data: any[] = [];
-
   @Input() displayedColumns?: string[];
-
   @Input() hiddenKeys: string[] = ['id', 'deleted', 'evaluations'];
-
   @Input() columnLabels?: Record<string, string>;
-
   @Input() columnRenderers?: Record<string, (row: any) => string>;
 
   @Output() removeEvent = new EventEmitter<number>();
   @Output() editEvent = new EventEmitter<any>();
 
+  @Input() exportBase?: string;       
+  @Input() idField: string = 'id';     
+  @Input() exportNeedsAuth = true;   
+
   columns: string[] = [];
   filteredData: any[] = [];
   searchTerm: string = '';
   sortDirections: { [key: string]: 'asc' | 'desc' } = {};
+
+  constructor(private http: HttpClient) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
@@ -140,5 +143,48 @@ export class GenericTableComponent implements OnChanges {
     this.filteredData = this.data.filter(row =>
       this.columns.some(col => String(this.getValue(row, col)).toLowerCase().includes(term))
     );
+  }
+
+
+  openPdf(row: any) {
+    this.openExport(row, 'pdf');
+  }
+
+  openXml(row: any) {
+    this.openExport(row, 'xml');
+  }
+
+  private openExport(row: any, ext: 'pdf' | 'xml') {
+    if (!this.exportBase) return;
+    const id = row?.[this.idField];
+    if (id == null) return;
+    const url = this.resolveUrl(`${this.exportBase}/${id}.${ext}`);
+
+    if (!this.exportNeedsAuth) {
+      window.open(url, '_blank');
+      return;
+    }
+
+    const headers = this.buildAuthHeaders();
+    this.http.get(url, { headers, responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+      },
+      error: (err) => {
+        console.error(`Failed to download ${ext}`, err);
+      }
+    });
+  }
+
+  private buildAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
+  }
+
+  private resolveUrl(path: string): string {
+    if (/^https?:\/\//i.test(path)) return path;
+    const origin = window?.location?.origin ?? '';
+    return path.startsWith('/') ? `${origin}${path}` : `${origin}/${path}`;
   }
 }

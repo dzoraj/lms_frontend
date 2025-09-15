@@ -38,8 +38,10 @@ export class AdminDashboardComponent {
     mode: 'table' | 'form';
     formQuestions: QuestionBase<any>[] | null;
     formModel: any;
+    exportBase?: string;
+    exportNeedsAuth?: boolean;
+    idField?: string;
   }[] = [];
-
 
   constructor(
     private dynamicService: DynamicService,
@@ -72,11 +74,25 @@ export class AdminDashboardComponent {
         data,
         mode: 'table',
         formQuestions: null,
-        formModel: null
+        formModel: null,
+        exportBase: this.computeExportBase(String(key), title),
+        exportNeedsAuth: true, 
+        idField: 'id'
       });
     });
   }
 
+  private computeExportBase(key: string, title: string): string | undefined {
+    const k = key.toLowerCase();
+    const t = title.toLowerCase();
+    if (k.includes('teacher') || t.includes('teacher')) {
+      return 'http://localhost:8080/api/export/teachers';
+    }
+    if (k.includes('student') || t.includes('student')) {
+      return 'http://localhost:8080/api/export/students';
+    }
+    return undefined;
+  }
 
   closeEntity(key: string) {
     this.openEntities = this.openEntities.filter(e => e.key !== key);
@@ -104,52 +120,52 @@ export class AdminDashboardComponent {
       console.warn(`No questions function for ${entity.title}`);
     }
   }
-handleFormSubmit(key: string, submitted: any) {
-  const entity = this.openEntities.find(e => e.key === key);
-  if (!entity) return;
 
-  const request$ = submitted.id
-    ? this.dynamicService.update(entity.endpoint, submitted.id, submitted)
-    : this.dynamicService.create(entity.endpoint, submitted);
+  handleFormSubmit(key: string, submitted: any) {
+    const entity = this.openEntities.find(e => e.key === key);
+    if (!entity) return;
 
-  request$.subscribe(() => {
-    this.dynamicService.getAll<any>(entity.endpoint).subscribe(data => {
-      entity.data = data;
-      entity.mode = 'table'; 
+    const request$ = submitted.id
+      ? this.dynamicService.update(entity.endpoint, submitted.id, submitted)
+      : this.dynamicService.create(entity.endpoint, submitted);
+
+    request$.subscribe(() => {
+      this.dynamicService.getAll<any>(entity.endpoint).subscribe(data => {
+        entity.data = data;
+        entity.mode = 'table';
+      });
     });
-  });
-}
+  }
 
   handleAdd(key: string) {
-  const entity = this.openEntities.find(e => e.key === key);
-  if (!entity) return;
+    const entity = this.openEntities.find(e => e.key === key);
+    if (!entity) return;
 
-  const fnName = `get${entity.title.replace(/\s/g, '')}Questions` as keyof QuestionService;
-  if (typeof this.questionService[fnName] === 'function') {
-    const q$ = (this.questionService[fnName] as any)();
-    if (q$.subscribe) {
-      q$.subscribe((qs: QuestionBase<any>[]) => {
-        entity.formQuestions = qs;
-        entity.formModel = {}; 
+    const fnName = `get${entity.title.replace(/\s/g, '')}Questions` as keyof QuestionService;
+    if (typeof this.questionService[fnName] === 'function') {
+      const q$ = (this.questionService[fnName] as any)();
+      if (q$.subscribe) {
+        q$.subscribe((qs: QuestionBase<any>[]) => {
+          entity.formQuestions = qs;
+          entity.formModel = {};
+          entity.mode = 'form';
+        });
+      } else {
+        entity.formQuestions = q$;
+        entity.formModel = {};
         entity.mode = 'form';
-      });
-    } else {
-      entity.formQuestions = q$;
-      entity.formModel = {};
-      entity.mode = 'form';
+      }
     }
   }
-}
 
-handleDelete(key: string, id: number) {
-  const entity = this.openEntities.find(e => e.key === key);
-  if (!entity) return;
+  handleDelete(key: string, id: number) {
+    const entity = this.openEntities.find(e => e.key === key);
+    if (!entity) return;
 
-  this.dynamicService.delete(entity.endpoint, id).subscribe(() => {
-    this.dynamicService.getAll<any>(entity.endpoint).subscribe(data => {
-      entity.data = data; 
+    this.dynamicService.delete(entity.endpoint, id).subscribe(() => {
+      this.dynamicService.getAll<any>(entity.endpoint).subscribe(data => {
+        entity.data = data;
+      });
     });
-  });
-}
-
+  }
 }
