@@ -1,0 +1,221 @@
+<div class="planner">
+  <h3>Schedule Planner</h3>
+
+  <div class="card">
+    <h4>Overview (by Study Year)</h4>
+    <div class="row">
+      <div>
+        <label>Study Year</label>
+        <select [(ngModel)]="schedStudyYearId" name="schedStudyYearId">
+          <option [ngValue]="null">Select</option>
+          <option *ngFor="let y of studyYears" [ngValue]="y.id">{{ y.enrollmentDate }}</option>
+        </select>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>From</mat-label>
+        <input matInput [matDatepicker]="fromDp" [(ngModel)]="schedFrom" name="schedFrom">
+        <mat-datepicker-toggle matSuffix [for]="fromDp"></mat-datepicker-toggle>
+        <mat-datepicker #fromDp></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>To</mat-label>
+        <input matInput [matDatepicker]="toDp" [(ngModel)]="schedTo" name="schedTo">
+        <mat-datepicker-toggle matSuffix [for]="toDp"></mat-datepicker-toggle>
+        <mat-datepicker #toDp></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="load()">Load</button>
+    </div>
+
+    <div class="table">
+      <table mat-table [dataSource]="schedule" class="mat-elevation-z1">
+        <ng-container matColumnDef="start">
+          <th mat-header-cell *matHeaderCellDef>Start</th>
+          <td mat-cell *matCellDef="let r">{{ r.startTime | date:'yyyy-MM-dd HH:mm' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="end">
+          <th mat-header-cell *matHeaderCellDef>End</th>
+          <td mat-cell *matCellDef="let r">{{ r.endTime | date:'yyyy-MM-dd HH:mm' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let r">{{ r.type }}</td>
+        </ng-container>
+        <ng-container matColumnDef="subject">
+          <th mat-header-cell *matHeaderCellDef>Subject</th>
+          <td mat-cell *matCellDef="let r">{{ r.subjectName || '-' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="label">
+          <th mat-header-cell *matHeaderCellDef>Label</th>
+          <td mat-cell *matCellDef="let r">{{ r.label || '-' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="crid">
+          <th mat-header-cell *matHeaderCellDef>CR</th>
+          <td mat-cell *matCellDef="let r">{{ r.courseRealizationId }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>Create Recurring Classes</h4>
+    <div class="grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Course Realization</mat-label>
+        <mat-select [(ngModel)]="recCourseRealizationId" name="recCourseRealizationId">
+          <mat-option *ngFor="let cr of courseRealizations" [value]="cr.id">{{ cr.subject?.name || ('CR #'+cr.id) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Teaching Type</mat-label>
+        <mat-select [(ngModel)]="recTeachingTypeId" name="recTeachingTypeId">
+          <mat-option *ngFor="let tt of teachingTypes" [value]="tt.id">{{ tt.name || ('#'+tt.id) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Semester Start</mat-label>
+        <input matInput [matDatepicker]="rs" [(ngModel)]="recStartDate" name="recStartDate">
+        <mat-datepicker-toggle matSuffix [for]="rs"></mat-datepicker-toggle>
+        <mat-datepicker #rs></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Semester End</mat-label>
+        <input matInput [matDatepicker]="re" [(ngModel)]="recEndDate" name="recEndDate">
+        <mat-datepicker-toggle matSuffix [for]="re"></mat-datepicker-toggle>
+        <mat-datepicker #re></mat-datepicker>
+      </mat-form-field>
+
+      <label>
+        <span>Start (HH:mm)</span>
+        <input [(ngModel)]="recStartTime" name="recStartTime" placeholder="08:00">
+      </label>
+      <label>
+        <span>End (HH:mm)</span>
+        <input [(ngModel)]="recEndTime" name="recEndTime" placeholder="09:30">
+      </label>
+
+      <mat-form-field appearance="outline" class="span2">
+        <mat-label>Days of Week</mat-label>
+        <mat-select [(ngModel)]="recDaysOfWeek" name="recDaysOfWeek" multiple>
+          <mat-option *ngFor="let d of weekdays" [value]="d">{{ d }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="span2">
+        <mat-label>Learning Outcomes</mat-label>
+        <mat-select [(ngModel)]="recSelectedLOIds" name="recSelectedLOIds" multiple>
+          <mat-option *ngFor="let lo of learningOutcomes" [value]="lo.id">{{ lo.name || ('LO #'+lo.id) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="span2">
+        <div class="skip-row">
+          <label>
+            <span>Skip Date</span>
+            <input type="date" [(ngModel)]="recSkipDateInput" name="recSkipDateInput">
+          </label>
+          <button mat-stroked-button (click)="addSkipDate()">Add</button>
+        </div>
+        <mat-list>
+          <mat-list-item *ngFor="let d of recSkipDates; let i = index">
+            {{ d }}
+            <button mat-icon-button (click)="removeSkipDate(i)"><mat-icon>close</mat-icon></button>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <div class="span2 actions">
+        <button mat-button (click)="previewConflicts()">Check Conflicts (2-week preview)</button>
+        <button mat-raised-button color="primary" (click)="createRecurring()">Create</button>
+      </div>
+
+      <div class="span2" *ngIf="conflict">
+        <h5>Conflicts: {{ conflict.hasConflicts ? 'YES' : 'none' }}</h5>
+        <mat-list *ngIf="conflict.details?.length">
+          <mat-list-item *ngFor="let c of conflict.details">
+            <span class="badge">{{ c.kind }}</span>
+            <span class="ms-2">{{ c.info }} ({{ c.againstType }} #{{ c.againstId }})</span>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>Create Knowledge Evaluation</h4>
+    <div class="grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Course Realization</mat-label>
+        <mat-select [(ngModel)]="evalCourseRealizationId" name="evalCourseRealizationId">
+          <mat-option *ngFor="let cr of courseRealizations" [value]="cr.id">{{ cr.subject?.name || ('CR #'+cr.id) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Evaluation Type</mat-label>
+        <mat-select [(ngModel)]="evalEvaluationTypeId" name="evalTypeId">
+          <mat-option *ngFor="let t of evaluationTypes" [value]="t.id">{{ t.name || ('#'+t.id) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Evaluation Instrument</mat-label>
+        <mat-select [(ngModel)]="evalEvaluationInstrumentId" name="evalInstrId">
+          <mat-option *ngFor="let i of evaluationInstruments" [value]="i.id">{{ i.name || ('#'+i.id) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <label>
+        <span>Points</span>
+        <input type="number" [(ngModel)]="evalPoints" name="evalPoints" min="0">
+      </label>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="edp" [(ngModel)]="evalDate" name="evalDate">
+        <mat-datepicker-toggle matSuffix [for]="edp"></mat-datepicker-toggle>
+        <mat-datepicker #edp></mat-datepicker>
+      </mat-form-field>
+
+      <label>
+        <span>Start (HH:mm)</span>
+        <input [(ngModel)]="evalStartTime" name="evalStartTime" placeholder="10:00">
+      </label>
+
+      <label>
+        <span>End (HH:mm)</span>
+        <input [(ngModel)]="evalEndTime" name="evalEndTime" placeholder="12:00">
+      </label>
+
+      <mat-form-field appearance="outline" class="span2">
+        <mat-label>Learning Outcomes</mat-label>
+        <mat-select [(ngModel)]="evalSelectedLOIds" name="evalSelectedLOIds" multiple>
+          <mat-option *ngFor="let lo of learningOutcomes" [value]="lo.id">{{ lo.name || ('LO #'+lo.id) }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="span2 actions">
+        <button mat-button (click)="previewEvalConflicts()">Check Conflicts</button>
+        <button mat-raised-button color="primary" (click)="createKnowledgeEvaluation()">Create Evaluation</button>
+      </div>
+
+      <div class="span2" *ngIf="evalConflict">
+        <h5>Conflicts: {{ evalConflict.hasConflicts ? 'YES' : 'none' }}</h5>
+        <mat-list *ngIf="evalConflict.details?.length">
+          <mat-list-item *ngFor="let c of evalConflict.details">
+            <span class="badge">{{ c.kind }}</span>
+            <span class="ms-2">{{ c.info }} ({{ c.againstType }} #{{ c.againstId }})</span>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </div>
+  </div>
+</div>

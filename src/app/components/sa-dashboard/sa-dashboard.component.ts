@@ -10,6 +10,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { GenericTableComponent } from '../../dynamic-components/generic-table/generic-table.component';
 import { DynamicService } from '../../service/dynamic-service/dynamic.service';
 import { finalize } from 'rxjs';
+import { SchedulePlannerComponent } from "../schedule-planner/schedule-planner.component";
 
 @Component({
   selector: 'app-sa-dashboard',
@@ -22,8 +23,9 @@ import { finalize } from 'rxjs';
     MatInputModule,
     MatOptionModule,
     NavbarComponent,
-    GenericTableComponent
-  ],
+    GenericTableComponent,
+    SchedulePlannerComponent
+],
   templateUrl: './sa-dashboard.component.html',
   styleUrls: ['./sa-dashboard.component.css']
 })
