@@ -8,7 +8,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
-import { NotificationService } from '../../service/notification-service/notification.service';
+import { StudentNotificationsComponent } from "../student-notification/student-notification.component";
 
 @Component({
   selector: 'app-student-dashboard',
@@ -19,7 +19,8 @@ import { NotificationService } from '../../service/notification-service/notifica
     MatTabsModule,
     MatCardModule,
     MatProgressBarModule,
-    RouterLink
+    RouterLink,
+    StudentNotificationsComponent
   ],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.css']
@@ -34,7 +35,6 @@ export class StudentDashboardComponent implements OnInit {
   constructor(
     private dynamic: DynamicService,
     private loginService: LoginService,
-    private notifService: NotificationService
   ) {}
 
   ngOnInit(): void {

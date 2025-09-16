@@ -1,6 +1,20 @@
-<ul>
-  <li *ngFor="let n of notifications">
-    <strong>{{ n.title }}</strong> - {{ n.content }}
-    <span>(Course #{{ n.courseRealizationId }})</span>
+<div *ngIf="!general.length && !course.length" class="text-muted">No notifications yet.</div>
+
+<h3>General</h3>
+<ul *ngIf="general.length; else noGen">
+  <li *ngFor="let n of general; trackBy: trackById">
+    <strong>{{ n.title }}</strong> — {{ n.content }}
+    <small>({{ n.timePosted | date:'short' }})</small>
   </li>
 </ul>
+<ng-template #noGen><p class="text-muted">No general notifications.</p></ng-template>
+
+<h3>Course</h3>
+<ul *ngIf="course.length; else noCourse">
+  <li *ngFor="let n of course; trackBy: trackById">
+    <strong>{{ n.title }}</strong> — {{ n.content }}
+    <span>({{ n.courseName || ('Course #' + (n.courseRealizationId || '—')) }})</span>
+    <small>({{ n.timePosted | date:'short' }})</small>
+  </li>
+</ul>
+<ng-template #noCourse><p class="text-muted">No course notifications.</p></ng-template>

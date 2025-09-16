@@ -1,0 +1,19 @@
+<div class="wrap">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card">
+    <h3>POST: </h3>
+    <input class="input" placeholder="Title" formControlName="title" />
+    <textarea class="textarea" rows="4" placeholder="Content" formControlName="content"></textarea>
+    <button class="btn" type="submit" [disabled]="posting">Objavi</button>
+  </form>
+
+  <section class="card">
+    <h3>POSTED: </h3>
+    <ul class="list">
+      <li *ngFor="let n of items">
+        <strong>{{ n.title }}</strong>
+        <p>{{ n.content }}</p>
+        <small>{{ n.timePosted | date:'short' }}</small>
+      </li>
+    </ul>
+  </section>
+</div>

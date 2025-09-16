@@ -11,6 +11,7 @@ import { GenericTableComponent } from '../../dynamic-components/generic-table/ge
 import { DynamicService } from '../../service/dynamic-service/dynamic.service';
 import { finalize } from 'rxjs';
 import { SchedulePlannerComponent } from "../schedule-planner/schedule-planner.component";
+import { SaGeneralNotificationsComponent } from "../sa-general-notifications/sa-general-notifications.component";
 
 @Component({
   selector: 'app-sa-dashboard',
@@ -24,7 +25,8 @@ import { SchedulePlannerComponent } from "../schedule-planner/schedule-planner.c
     MatOptionModule,
     NavbarComponent,
     GenericTableComponent,
-    SchedulePlannerComponent
+    SchedulePlannerComponent,
+    SaGeneralNotificationsComponent
 ],
   templateUrl: './sa-dashboard.component.html',
   styleUrls: ['./sa-dashboard.component.css']

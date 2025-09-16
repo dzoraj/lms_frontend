@@ -139,17 +139,7 @@
       <mat-tab label="Notifications">
         <div class="mt-3">
           <mat-card>
-            <div *ngIf="!notifications?.length" class="text-muted">
-              No notifications yet.
-            </div>
-
-            <ul *ngIf="notifications?.length" class="list-unstyled">
-              <li *ngFor="let n of notifications" class="mb-2">
-                <strong>{{ n.title }}</strong> — {{ n.content }}
-                <br>
-                <small>{{ n.timePosted | date:'short' }}</small>
-              </li>
-            </ul>
+            <app-student-notifications [courseInitial]="notifications"></app-student-notifications>
           </mat-card>
         </div>
       </mat-tab>
