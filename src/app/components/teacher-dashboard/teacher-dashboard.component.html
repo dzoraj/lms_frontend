@@ -366,13 +366,10 @@
           </div>
         </div>
       </mat-tab>
+      
 
 
-      <mat-tab label="Profile">
-        <div class="mt-3">
-          <p><strong>Email:</strong> {{ teacherDto.email }}</p>
-          <p><strong>Biography:</strong> {{ teacherDto.biography || '—' }}</p>
-        </div>
+      <mat-tab><app-quiz></app-quiz>
       </mat-tab>
     </mat-tab-group>
   </ng-container>

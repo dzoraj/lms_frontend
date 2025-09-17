@@ -2,16 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-
 import { DynamicService } from '../../service/dynamic-service/dynamic.service';
 import { LoginService } from '../../service/loginService/login.service';
 import { QuestionService } from '../../service/question/question.service';
-
 import { NavbarComponent } from "../navbar/navbar.component";
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
 import { GenericCrudComponent } from '../generic-crud/generic-crud.component';
 import { GenericTableComponent } from '../../dynamic-components/generic-table/generic-table.component';
+import { QuizComponent } from "../quiz/quiz.component";
 
 @Component({
   selector: 'app-teacher-dashboard',
@@ -22,7 +21,8 @@ import { GenericTableComponent } from '../../dynamic-components/generic-table/ge
     NavbarComponent,
     MatTabsModule,
     GenericCrudComponent,
-    GenericTableComponent
+    GenericTableComponent,
+    QuizComponent
   ],
   templateUrl: './teacher-dashboard.component.html',
   styleUrls: ['./teacher-dashboard.component.css']
@@ -30,7 +30,6 @@ import { GenericTableComponent } from '../../dynamic-components/generic-table/ge
 export class TeacherDashboardComponent implements OnInit {
   teacherDto: any | null = null;
   subjects: any[] = [];
-
   evalInstrQuestions$!: Observable<any[]>;
   tableDisplayedColumns = ['name', 'file'];
   tableColumnLabels = { name: 'Instrument', file: 'File' };
@@ -85,12 +84,17 @@ export class TeacherDashboardComponent implements OnInit {
   gradeForm = { points: 0, note: '' };
   gradeSuccess: string | null = null;
 
+  quizSelectedSubjectId: number | null = null;
+  quizMode: 'editor' | 'take' = 'editor';
+  quizStudentInYearId?: number;
+  keOptions: Array<{ id: number; label: string }> = [];
+  selectedKeId: number | null = null;
 
   constructor(
     private dynamic: DynamicService,
     private loginService: LoginService,
     public questionService: QuestionService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const teacherId = this.getLoggedTeacherId();
@@ -110,7 +114,6 @@ export class TeacherDashboardComponent implements OnInit {
   private loadDashboard(teacherId: number): void {
     this.loading = true;
     this.error = null;
-
     this.dynamic.getById<any>('teacher-dashboard', teacherId)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -132,9 +135,7 @@ export class TeacherDashboardComponent implements OnInit {
     if (f.enrollmentYear) params.set('enrollmentYear', String(f.enrollmentYear));
     if (f.minAvg != null) params.set('minAvg', String(f.minAvg));
     if (f.maxAvg != null) params.set('maxAvg', String(f.maxAvg));
-
     this.studentsLoading = true;
-
     let path: string;
     if (this.globalSearch) {
       path = `students/search?${params.toString()}`;
@@ -143,7 +144,6 @@ export class TeacherDashboardComponent implements OnInit {
       if (!teacherId) return;
       path = `teacher/${teacherId}/students?${params.toString()}`;
     }
-
     this.dynamic.getByPath<any[]>(path)
       .pipe(finalize(() => this.studentsLoading = false))
       .subscribe({
@@ -151,9 +151,7 @@ export class TeacherDashboardComponent implements OnInit {
           this.students = list ?? [];
           this.selectedStudentProfile = null;
         },
-        error: (err) => {
-          console.error('Student search failed', err);
-        }
+        error: () => {}
       });
   }
 
@@ -169,14 +167,13 @@ export class TeacherDashboardComponent implements OnInit {
     this.dynamic.getByPath<any>(`students/${row.id}/profile`)
       .subscribe({
         next: (prof) => this.selectedStudentProfile = prof,
-        error: (err) => console.error('Profile load failed', err)
+        error: () => {}
       });
   }
 
   loadSyllabus(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
-
     this.syllabusLoading = true;
     this.dynamic
       .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/syllabus`)
@@ -186,16 +183,13 @@ export class TeacherDashboardComponent implements OnInit {
           this.syllabus = list ?? [];
           this.selectedSubject = this.subjects.find((s) => s.id === subjectId) || null;
         },
-        error: (err) => {
-          console.error('Failed to load syllabus', err);
-        },
+        error: () => {}
       });
   }
 
   saveOutcome(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId || !this.newOutcome.trim()) return;
-
     const payload = { description: this.newOutcome };
     this.dynamic
       .create<any>(`teacher/${teacherId}/subjects/${subjectId}/syllabus`, payload)
@@ -204,34 +198,27 @@ export class TeacherDashboardComponent implements OnInit {
           this.syllabus.push(res);
           this.newOutcome = '';
         },
-        error: (err) => {
-          console.error('Failed to save outcome', err);
-        },
+        error: () => {}
       });
   }
 
   deleteOutcome(subjectId: number, outcomeId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
-
     this.dynamic
       .delete(`teacher/${teacherId}/subjects/${subjectId}/syllabus`, outcomeId)
       .subscribe({
         next: () => {
           this.syllabus = this.syllabus.filter(lo => lo.id !== outcomeId);
         },
-        error: (err) => {
-          console.error('Failed to delete outcome', err);
-        },
+        error: () => {}
       });
   }
 
   loadSessions(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
-
     this.selectedSubject = this.subjects.find((s) => s.id === subjectId) || null;
-
     this.sessionLoading = true;
     this.dynamic
       .getByPath<any[]>(`teachingSession?subjectId=${subjectId}`)
@@ -242,14 +229,13 @@ export class TeacherDashboardComponent implements OnInit {
           this.selectedSession = null;
           this.sessionOutcomes = [];
         },
-        error: (err) => console.error("Failed to load sessions", err),
+        error: () => {}
       });
   }
 
   loadSessionOutcomes(subjectId: number, sessionId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId || !subjectId) return;
-
     this.dynamic
       .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/sessions/${sessionId}/outcomes`)
       .subscribe({
@@ -258,14 +244,13 @@ export class TeacherDashboardComponent implements OnInit {
           this.selectedSession = this.sessions.find((s) => s.id === sessionId) || null;
           this.selectedOutcomes = this.sessionOutcomes.map((lo) => lo.id);
         },
-        error: (err) => console.error("Failed to load session outcomes", err),
+        error: () => {}
       });
   }
 
   assignOutcomesToSession(subjectId: number, sessionId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
-
     this.dynamic
       .create<any>(`teacher/${teacherId}/subjects/${subjectId}/sessions/${sessionId}/outcomes`, this.selectedOutcomes)
       .subscribe({
@@ -274,7 +259,7 @@ export class TeacherDashboardComponent implements OnInit {
           this.successMessage = 'Outcomes successfully assigned!';
           setTimeout(() => this.successMessage = null, 3000);
         },
-        error: (err) => console.error("Failed to assign outcomes", err),
+        error: () => {}
       });
   }
 
@@ -289,7 +274,6 @@ export class TeacherDashboardComponent implements OnInit {
   loadNotifications(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
-
     this.notificationsLoading = true;
     this.dynamic
       .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/notifications`)
@@ -299,40 +283,30 @@ export class TeacherDashboardComponent implements OnInit {
           this.notifications = list ?? [];
           this.selectedSubject = this.subjects.find((s) => s.id === subjectId) || null;
         },
-        error: (err) => {
-          console.error('Failed to load notifications', err);
-        },
+        error: () => {}
       });
   }
 
-createNotification(subjectId: number): void {
-  const teacherId = this.getLoggedTeacherId();
-  if (!teacherId || !this.newNotification.title.trim()) return;
-
-  const payload = {
-    title: this.newNotification.title,
-    content: this.newNotification.content
-  };
-
-  this.dynamic
-    .create<any>(`teacher/${teacherId}/subjects/${subjectId}/notifications`, payload)
-    .subscribe({
-      next: (res) => {
-        this.notifications.unshift(res);
-        this.newNotification = { title: '', content: '' };
-        this.successMessage = 'Notification posted!';
-        setTimeout(() => (this.successMessage = null), 3000);
-      },
-      error: (err) => {
-        console.error('Failed to create notification', err);
-      },
-    });
-}
+  createNotification(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId || !this.newNotification.title.trim()) return;
+    const payload = { title: this.newNotification.title, content: this.newNotification.content };
+    this.dynamic
+      .create<any>(`teacher/${teacherId}/subjects/${subjectId}/notifications`, payload)
+      .subscribe({
+        next: (res) => {
+          this.notifications.unshift(res);
+          this.newNotification = { title: '', content: '' };
+          this.successMessage = 'Notification posted!';
+          setTimeout(() => (this.successMessage = null), 3000);
+        },
+        error: () => {}
+      });
+  }
 
   loadExamApplications(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
     if (!teacherId) return;
-
     this.examAppsLoading = true;
     this.dynamic
       .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/examApplications`)
@@ -342,7 +316,7 @@ createNotification(subjectId: number): void {
           this.examApplications = apps ?? [];
           this.selectedSubject = this.subjects.find(s => s.id === subjectId) || null;
         },
-        error: (err) => console.error('Failed to load exam applications', err),
+        error: () => {}
       });
   }
 
@@ -359,7 +333,6 @@ createNotification(subjectId: number): void {
       alert("Points must be greater than 0.");
       return;
     }
-
     this.dynamic
       .create<any>(
         `teacher/${teacherId}/examApplication/${app.id}/grade?points=${this.gradeForm.points}&note=${encodeURIComponent(this.gradeForm.note || '')}`,
@@ -370,14 +343,51 @@ createNotification(subjectId: number): void {
           this.gradeSuccess = 'Grade successfully saved!';
           setTimeout(() => (this.gradeSuccess = null), 3000);
           this.selectedExamApp = null;
-          this.loadExamApplications(this.selectedSubject.id);
+          this.loadExamApplications(this.selectedSubject!.id);
         },
         error: (err) => {
-          console.error('Failed to save grade', err);
           alert(err?.error?.message || "Failed to save grade");
-        },
+        }
       });
   }
 
+  onSelectQuizSubject(subjectId: number): void {
+    this.quizSelectedSubjectId = subjectId;
+    this.selectedKeId = null;
+    this.keOptions = [];
+    this.fetchKeOptionsFromExamApps(subjectId);
+  }
 
+  private fetchKeOptionsFromExamApps(subjectId: number): void {
+    const teacherId = this.getLoggedTeacherId();
+    if (!teacherId) return;
+    this.dynamic
+      .getByPath<any[]>(`teacher/${teacherId}/subjects/${subjectId}/examApplications`)
+      .subscribe({
+        next: (apps) => {
+          const seen = new Set<number>();
+          const options: Array<{ id: number; label: string }> = [];
+          (apps ?? []).forEach((a: any) => {
+            const id: number | undefined =
+              a?.knowledgeEvaluationId ??
+              a?.evaluationId ??
+              a?.knowledgeEvaluation?.id ??
+              a?.keId;
+            if (!id || seen.has(id)) return;
+            seen.add(id);
+            const dateStr = a?.examDate ? new Date(a.examDate).toLocaleString() : '';
+            const typeStr = a?.evaluationType || a?.evaluationTypeName || 'Evaluation';
+            const pts = a?.points ?? a?.maxPoints;
+            const label = [typeStr, dateStr, pts != null ? `${pts} pts` : ''].filter(Boolean).join(' — ');
+            options.push({ id, label: label || `KE #${id}` });
+          });
+          this.keOptions = options.sort((a, b) => a.label.localeCompare(b.label));
+          if (this.keOptions.length >= 1) this.selectedKeId = this.keOptions[0].id;
+        },
+        error: () => {
+          this.keOptions = [];
+          this.selectedKeId = null;
+        }
+      });
+  }
 }

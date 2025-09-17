@@ -383,7 +383,13 @@ getFileQuestions() {
     ];
     return of(questions.sort((a, b) => a.order - b.order));
   }
-
+  getEvaluationTypeQuestions() {
+    const questions: QuestionBase<any>[] = [
+      new TextboxQuestion({ key: 'id', type: 'hidden', order: 0 }),
+      new TextboxQuestion({ key: 'name', label: 'Name', type: 'text', required: true, order: 1 })
+    ];
+    return of(questions.sort((a, b) => a.order - b.order));
+  }
   getTeacherOnCourseQuestions() {
     const questions: QuestionBase<any>[] = [
       new TextboxQuestion({ key: 'id', type: 'hidden', order: 0 }),

@@ -5,6 +5,7 @@ export interface EvaluationAttempt {
   id?: number;
   points?: number | null;
   note?: string | null;
+  latest: boolean;
   evaluation?: KnowledgeEvaluation | null;
   studentInYear?: StudentInYear | null;
 }
