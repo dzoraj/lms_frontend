@@ -1,0 +1,101 @@
+<div class="card">
+  <h3>Faculty</h3>
+  <div class="row">
+    <label>Faculty ID</label>
+    <input type="number" [(ngModel)]="facultyId" min="1" />
+    <button (click)="load()">Load</button>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>Stock</h3>
+
+    <div class="row">
+      <label>Item</label>
+      <input type="text" [(ngModel)]="supplyForm.itemName" placeholder="NAME" />
+      <label>Qty</label>
+      <input type="number" [(ngModel)]="supplyForm.quantity" min="1" />
+      <button (click)="submitSupply()">Upsert</button>
+    </div>
+
+    <div *ngIf="loadingSupplies" class="muted">Loading…</div>
+    <div *ngIf="errorSupplies" class="error">{{errorSupplies}}</div>
+
+    <table *ngIf="supplies.length; else noStock">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Updated</th>
+          <th>Add</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of supplies; index as i">
+          <td>{{i+1}}</td>
+          <td>{{s.itemName}}</td>
+          <td>{{s.quantity}}</td>
+          <td>{{s.updatedAt | date:'short'}}</td>
+          <td class="addcell">
+            <input type="number" min="1" [(ngModel)]="addMap[s.id]" placeholder="+"/>
+            <button (click)="addMore(s)">Add</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #noStock><div class="muted">No items.</div></ng-template>
+  </div>
+
+  <div class="card">
+    <h3>Orders</h3>
+
+    <div class="row">
+      <label>Item</label>
+      <input type="text" [(ngModel)]="orderForm.itemName" placeholder="NAME" />
+      <label>Qty</label>
+      <input type="number" [(ngModel)]="orderForm.quantity" min="1" />
+      <button (click)="placeOrder()">Place</button>
+    </div>
+
+    <div *ngIf="loadingOrders" class="muted">Loading…</div>
+    <div *ngIf="errorOrders" class="error">{{errorOrders}}</div>
+
+    <table *ngIf="orders.length; else noOrders">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of orders; index as i">
+          <td>{{i+1}}</td>
+          <td>{{o.itemName}}</td>
+          <td>{{o.quantity}}</td>
+          <td>
+            <span class="badge"
+              [class.placed]="o.status==='PLACED'"
+              [class.approved]="o.status==='APPROVED'"
+              [class.denied]="o.status==='DENIED'"
+              [class.received]="o.status==='RECEIVED'">
+              {{o.status}}
+            </span>
+          </td>
+          <td>{{o.createdAt | date:'short'}}</td>
+          <td class="actions">
+            <button (click)="setOrderStatus(o,'APPROVED')" [disabled]="o.status!=='PLACED'">Approve</button>
+            <button (click)="setOrderStatus(o,'DENIED')" [disabled]="o.status!=='PLACED'">Deny</button>
+            <button (click)="setOrderStatus(o,'RECEIVED')" [disabled]="o.status==='RECEIVED' || o.status==='DENIED'">Receive</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #noOrders><div class="muted">No orders.</div></ng-template>
+  </div>
+</div>

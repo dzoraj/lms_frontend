@@ -12,6 +12,7 @@ import { DynamicService } from '../../service/dynamic-service/dynamic.service';
 import { finalize } from 'rxjs';
 import { SchedulePlannerComponent } from '../schedule-planner/schedule-planner.component';
 import { SaGeneralNotificationsComponent } from '../sa-general-notifications/sa-general-notifications.component';
+import { FacultySuppliesComponent } from "../faculty-supplies/faculty-supplies.component";
 
 @Component({
   selector: 'app-sa-dashboard',
@@ -26,8 +27,9 @@ import { SaGeneralNotificationsComponent } from '../sa-general-notifications/sa-
     NavbarComponent,
     GenericTableComponent,
     SchedulePlannerComponent,
-    SaGeneralNotificationsComponent
-  ],
+    SaGeneralNotificationsComponent,
+    FacultySuppliesComponent
+],
   templateUrl: './sa-dashboard.component.html',
   styleUrls: ['./sa-dashboard.component.css']
 })
