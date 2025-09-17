@@ -1,0 +1,51 @@
+<div class="wrap">
+  <h2>Import Evaluation Attempts (XML)</h2>
+
+  <div class="row">
+    <label>Mode</label>
+    <select [(ngModel)]="mode">
+      <option value="MERGE">MERGE</option>
+      <option value="REPLACE">REPLACE</option>
+    </select>
+    <button  (click)="downloadSchema()">Download XSD</button>
+  </div>
+
+  <div class="card">
+    <h3>Source</h3>
+    <div class="grid">
+      <div >
+        <label>Upload file</label>
+        <input type="file" (change)="onFileChange($event)" />
+      </div>
+      <div >
+        <label>Or paste XML</label>
+        <textarea [(ngModel)]="xml" rows="12" placeholder="<evaluation>...</evaluation>"></textarea>
+      </div>
+
+    </div>
+    <div class="actions">
+      <button (click)="doValidate()">Validate XML</button>
+      <button class="primary" (click)="doImport()" [disabled]="loading">{{ loading ? 'Importing…' : 'Import' }}</button>
+      <button class="ghost" (click)="clearAll()">Clear</button>
+    </div>
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </div>
+
+  <div class="card" *ngIf="validation">
+    <h3>Validation</h3>
+    <pre>{{ validation | json }}</pre>
+  </div>
+
+  <div class="card" *ngIf="result">
+    <h3>Result</h3>
+    <div class="kv">
+      <div><b>Evaluation ID</b><span>{{ result.evaluationId }}</span></div>
+      <div><b>Total</b><span>{{ result.attemptsTotal }}</span></div>
+      <div><b>Inserted</b><span>{{ result.inserted }}</span></div>
+      <div><b>Updated</b><span>{{ result.updated }}</span></div>
+      <div><b>Skipped</b><span>{{ result.skipped }}</span></div>
+      <div><b>Replaced</b><span>{{ result.replaced ? 'yes' : 'no' }}</span></div>
+    </div>
+    <pre class="raw">{{ result | json }}</pre>
+  </div>
+</div>

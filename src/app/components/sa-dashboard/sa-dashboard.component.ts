@@ -13,6 +13,7 @@ import { finalize } from 'rxjs';
 import { SchedulePlannerComponent } from '../schedule-planner/schedule-planner.component';
 import { SaGeneralNotificationsComponent } from '../sa-general-notifications/sa-general-notifications.component';
 import { FacultySuppliesComponent } from "../faculty-supplies/faculty-supplies.component";
+import { ImportEvaluationAttemptComponent } from "../import-evaluation-attempt/import-evaluation-attempt.component";
 
 @Component({
   selector: 'app-sa-dashboard',
@@ -28,7 +29,8 @@ import { FacultySuppliesComponent } from "../faculty-supplies/faculty-supplies.c
     GenericTableComponent,
     SchedulePlannerComponent,
     SaGeneralNotificationsComponent,
-    FacultySuppliesComponent
+    FacultySuppliesComponent,
+    ImportEvaluationAttemptComponent
 ],
   templateUrl: './sa-dashboard.component.html',
   styleUrls: ['./sa-dashboard.component.css']
