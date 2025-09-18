@@ -83,6 +83,8 @@
                   <th>Subject</th>
                   <th>Points</th>
                   <th>Status</th>
+                  <th>Latest</th>
+                  <th>Type</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,6 +96,8 @@
                       {{ att.testPassed ? 'Passed' : 'Failed' }}
                     </span>
                   </td>
+                  <td>{{ (att.latest ?? att.isLatest) ? 'Yes' : 'No' }}</td>
+                  <td>{{ att.evaluationType || att.type || '—' }}</td>
                 </tr>
               </tbody>
             </table>

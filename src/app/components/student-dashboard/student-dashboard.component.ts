@@ -48,14 +48,9 @@ export class StudentDashboardComponent implements OnInit {
       this.error = 'Student ID not found in JWT token.';
       return;
     }
-
     this.loadDashboard(studentId);
     this.loadUpcomingExams(studentId);
-
-    this.dynamic.getById<any>('notifications/student', studentId)
-      .subscribe(list => {
-        this.notifications = list;
-      });
+    this.dynamic.getById<any>('notifications/student', studentId).subscribe(list => { this.notifications = list; });
   }
 
   private getLoggedStudentId(): number | null {
@@ -71,7 +66,6 @@ export class StudentDashboardComponent implements OnInit {
   private loadDashboard(studentId: number): void {
     this.loading = true;
     this.error = null;
-
     this.dynamic.getById<any>('students/dashboard', studentId)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -106,12 +100,7 @@ export class StudentDashboardComponent implements OnInit {
       this.error = 'No active enrollment found.';
       return;
     }
-
-    const payload = {
-      studentInYearId: activeEnrollmentId,
-      knowledgeEvaluationId: evaluationId
-    };
-
+    const payload = { studentInYearId: activeEnrollmentId, knowledgeEvaluationId: evaluationId };
     this.dynamic.create<any>('exam-applications', payload)
       .subscribe({
         next: () => {
