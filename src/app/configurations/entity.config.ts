@@ -37,7 +37,7 @@ export const ENTITY_CONFIG = {
     title: 'Message'
   },
   notification: {
-    endpoint: 'notification',
+    endpoint: 'notifications',
     questionFn: 'getNotificationQuestions',
     title: 'Notification'
   },

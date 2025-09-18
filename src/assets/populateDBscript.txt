@@ -103,8 +103,8 @@ INSERT INTO study_program (deleted,faculty_id,leader_id,name) VALUES
 -- STUDY YEARS
 -- ================================
 INSERT INTO study_year (deleted,enrollment_date,study_program_id) VALUES
-(b'0','2022-10-01',1),
-(b'0','2022-10-01',2);
+(b'0','2025-10-01',1),
+(b'0','2025-10-02',2);
 
 -- ================================
 -- SUBJECTS

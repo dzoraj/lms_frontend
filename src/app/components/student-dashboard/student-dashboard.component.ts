@@ -63,9 +63,21 @@ export class StudentDashboardComponent implements OnInit {
     this.upcomingExams = (this.upcomingExams ?? []).map((e: any) => ({ ...e, attempted: ids.has(e.id) }));
   }
 
+  private backfillAttemptTypes(): void {
+    const map = new Map<number, any>((this.upcomingExams ?? []).map((e: any) => [e.id, e]));
+    if (this.studentDto?.examAttempts?.length) {
+      this.studentDto.examAttempts = this.studentDto.examAttempts.map((a: any) => {
+        const src = map.get(a.evaluationId);
+        const t = a.type ?? a.evaluationType ?? src?.type ?? src?.evaluationType ?? null;
+        const instr = a.instrument ?? a.evaluationInstrument ?? src?.instrument ?? src?.evaluationInstrument ?? null;
+        return { ...a, type: t, instrument: instr };
+      });
+    }
+  }
+
   private loadDashboard(studentId: number): void {
     this.loading = true;
-    this.error = null;
+       this.error = null;
     this.dynamic.getById<any>('students/dashboard', studentId)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -73,6 +85,7 @@ export class StudentDashboardComponent implements OnInit {
           this.studentDto = dashboard;
           this.activeEnrollmentId = dashboard?.enrollments?.[0]?.id ?? null;
           this.applyAttemptedFlags();
+          this.backfillAttemptTypes();
         },
         error: (err) => {
           this.error = err?.error?.message || err?.message || 'Failed to load student dashboard';
@@ -89,6 +102,7 @@ export class StudentDashboardComponent implements OnInit {
             applied: exam.applied ?? false
           }));
           this.applyAttemptedFlags();
+          this.backfillAttemptTypes();
         },
         error: () => {}
       });
@@ -147,4 +161,37 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   cancelQuiz(): void { this.takingKeId = null; }
+
+  private truthyFlag(v: any): boolean {
+    if (v === true) return true;
+    if (v === false) return false;
+    if (v === 1 || v === '1') return true;
+    if (v === 0 || v === '0') return false;
+    if (typeof v === 'string') {
+      const s = v.toLowerCase();
+      if (s === 'true' || s === 'yes' || s === 'y') return true;
+      if (s === 'false' || s === 'no' || s === 'n') return false;
+    }
+    return !!v;
+  }
+
+  displayLatest(att: any): string {
+    const v =
+      att?.latest ??
+      att?.isLatest ??
+      att?.latestAttempt ??
+      att?.latestFlag ??
+      att?.latest_mark ??
+      null;
+    return this.truthyFlag(v) ? 'Yes' : 'No';
+  }
+  getSubj(att: any[] | null | undefined, subjectId: number | null | undefined) {
+  if (!att || subjectId == null) return null;
+  for (let i = 0; i < att.length; i++) {
+    const s = att[i];
+    if (s && s.subjectId === subjectId) return s;
+  }
+  return null;
 }
+}
+
