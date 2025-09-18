@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
 import { StudentNotificationsComponent } from "../student-notification/student-notification.component";
+import { QuizTakeComponent } from '../quiz-take/quiz-take.component';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -20,7 +21,8 @@ import { StudentNotificationsComponent } from "../student-notification/student-n
     MatCardModule,
     MatProgressBarModule,
     RouterLink,
-    StudentNotificationsComponent
+    StudentNotificationsComponent,
+    QuizTakeComponent
   ],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.css']
@@ -28,9 +30,12 @@ import { StudentNotificationsComponent } from "../student-notification/student-n
 export class StudentDashboardComponent implements OnInit {
   studentDto: any | null = null;
   notifications: any[] = [];
-  upcomingExams: any[] = [];  
+  upcomingExams: any[] = [];
   loading = false;
   error: string | null = null;
+
+  takingKeId: number | null = null;
+  activeEnrollmentId: number | null = null;
 
   constructor(
     private dynamic: DynamicService,
@@ -58,6 +63,11 @@ export class StudentDashboardComponent implements OnInit {
     return user?.id ?? null;
   }
 
+  private applyAttemptedFlags(): void {
+    const ids = new Set<number>((this.studentDto?.examAttempts ?? []).map((a: any) => a.evaluationId).filter((x: any) => x != null));
+    this.upcomingExams = (this.upcomingExams ?? []).map((e: any) => ({ ...e, attempted: ids.has(e.id) }));
+  }
+
   private loadDashboard(studentId: number): void {
     this.loading = true;
     this.error = null;
@@ -67,9 +77,10 @@ export class StudentDashboardComponent implements OnInit {
       .subscribe({
         next: (dashboard) => {
           this.studentDto = dashboard;
+          this.activeEnrollmentId = dashboard?.enrollments?.[0]?.id ?? null;
+          this.applyAttemptedFlags();
         },
         error: (err) => {
-          console.error('Failed to load student dashboard', err);
           this.error = err?.error?.message || err?.message || 'Failed to load student dashboard';
         },
       });
@@ -83,10 +94,9 @@ export class StudentDashboardComponent implements OnInit {
             ...exam,
             applied: exam.applied ?? false
           }));
+          this.applyAttemptedFlags();
         },
-        error: (err) => {
-          console.error('Failed to load upcoming exams', err);
-        }
+        error: () => {}
       });
   }
 
@@ -106,13 +116,46 @@ export class StudentDashboardComponent implements OnInit {
       .subscribe({
         next: () => {
           const exam = this.upcomingExams.find((e) => e.id === evaluationId);
-          if (exam) exam.applied = true; 
+          if (exam) exam.applied = true;
           alert('Successfully applied for exam.');
         },
         error: (err) => {
-          console.error(err);
           this.error = err?.error?.message || 'Failed to apply for exam';
         }
       });
   }
+
+  canStart(exam: any): boolean {
+    const now = Date.now();
+    const start = exam?.startTime ? new Date(exam.startTime).getTime() : -Infinity;
+    const end = exam?.endTime ? new Date(exam.endTime).getTime() : Infinity;
+    const windowOk = start <= now && now <= end;
+    return !!exam?.applied && windowOk && !exam?.attempted;
+  }
+
+  windowStatus(exam: any): 'before' | 'during' | 'after' {
+    const now = Date.now();
+    const start = exam?.startTime ? new Date(exam.startTime).getTime() : -Infinity;
+    const end = exam?.endTime ? new Date(exam.endTime).getTime() : Infinity;
+    if (now < start) return 'before';
+    if (now > end) return 'after';
+    return 'during';
+  }
+
+  startQuiz(exam: any): void {
+    if (!this.activeEnrollmentId) { this.error = 'No active enrollment found.'; return; }
+    this.takingKeId = exam.id;
+  }
+
+  onFinished(_: any): void {
+    const id = this.takingKeId;
+    this.takingKeId = null;
+    if (id != null) {
+      const ex = this.upcomingExams.find(e => e.id === id);
+      if (ex) ex.attempted = true;
+    }
+    const sid = this.getLoggedStudentId(); if (sid) this.loadDashboard(sid);
+  }
+
+  cancelQuiz(): void { this.takingKeId = null; }
 }

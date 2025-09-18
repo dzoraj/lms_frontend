@@ -1,0 +1,37 @@
+<div *ngIf="state() === 'loading'">Loading…</div>
+<div *ngIf="state() === 'error'" class="alert alert-danger">{{ error() }}</div>
+
+<div *ngIf="defn() as d">
+  <div class="header">
+    <h4 class="mb-1">{{ d.title }}</h4>
+    <div class="muted">Max points: {{ totalMax }}</div>
+    <p class="mt-2" *ngIf="d.instructions">{{ d.instructions }}</p>
+  </div>
+
+  <div class="qcard" *ngFor="let q of d.questions; index as i">
+    <div class="qhead">
+      <div class="idx">Q{{ i+1 }}</div>
+      <div class="meta">
+        <div class="qtext">{{ q.text }}</div>
+        <div class="muted">{{ q.type }} • {{ q.points }} pts</div>
+      </div>
+    </div>
+
+    <div class="opts">
+      <label class="opt" *ngFor="let o of q.options">
+        <input
+          [type]="q.type === 'SINGLE' ? 'radio' : 'checkbox'"
+          [name]="'q'+q.id"
+          [checked]="isSelected(q.id!, o.id!)"
+          (change)="toggleSelect(q.id!, o.id!, $any(q).type)">
+        <span>{{ o.text }}</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" (click)="submit()" [disabled]="state() === 'submitting'">
+      {{ state() === 'submitting' ? 'Submitting…' : 'Submit' }}
+    </button>
+  </div>
+</div>

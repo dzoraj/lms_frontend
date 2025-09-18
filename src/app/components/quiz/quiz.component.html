@@ -1,1 +1,7 @@
-<p>quiz works!</p>
+<ng-container [ngSwitch]="mode">
+    <app-quiz-editor *ngSwitchCase="'editor'" [knowledgeEvaluationId]="knowledgeEvaluationId!"></app-quiz-editor>
+    <app-quiz-take *ngSwitchCase="'take'" [knowledgeEvaluationId]="knowledgeEvaluationId!"
+        [studentInYearId]="studentInYearId!" (finished)="finished($event)">
+    </app-quiz-take>
+    <div *ngSwitchDefault>Mode not set.</div>
+</ng-container>

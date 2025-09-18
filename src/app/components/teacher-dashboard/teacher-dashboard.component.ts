@@ -351,12 +351,26 @@ export class TeacherDashboardComponent implements OnInit {
       });
   }
 
-  onSelectQuizSubject(subjectId: number): void {
-    this.quizSelectedSubjectId = subjectId;
-    this.selectedKeId = null;
-    this.keOptions = [];
-    this.fetchKeOptionsFromExamApps(subjectId);
-  }
+onSelectQuizSubject(subjectId: number): void {
+  this.quizSelectedSubjectId = subjectId;
+  this.selectedKeId = null;
+  this.keOptions = [];
+  this.dynamic.getKnowledgeEvaluationsBySubject(subjectId).subscribe({
+    next: (list) => {
+      this.keOptions = (list ?? []).map(ke => ({
+        id: ke.id!,
+        label: [
+          ke.evaluationType?.name ?? 'Evaluation',
+          ke.courseRealization?.subject?.name,
+          [ke.startTime, ke.endTime].filter(Boolean)
+            .map(t => new Date(String(t)).toLocaleString()).join(' – '),
+          ke.points != null ? `${ke.points} pts` : ''
+        ].filter(Boolean).join(' — ')
+      }));
+      if (this.keOptions.length) this.selectedKeId = this.keOptions[0].id;
+    }
+  });
+}
 
   private fetchKeOptionsFromExamApps(subjectId: number): void {
     const teacherId = this.getLoggedTeacherId();
@@ -390,4 +404,6 @@ export class TeacherDashboardComponent implements OnInit {
         }
       });
   }
+  
+  
 }

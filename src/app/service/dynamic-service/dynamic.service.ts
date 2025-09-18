@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { KnowledgeEvaluation } from '../../model/teaching/knowledge-evaluation.model';
 
 @Injectable({ providedIn: 'root' })
 export class DynamicService {
@@ -67,5 +68,11 @@ export class DynamicService {
   }
 
 
+  getKnowledgeEvaluationsBySubject(subjectId: number): Observable<KnowledgeEvaluation[]> {
+    return this.http.get<KnowledgeEvaluation[]>(
+      `${this.baseUrl}/knowledgeEvaluation/by-subject/${subjectId}`,
+      this.authHeaders()
+    );
 
+}
 }

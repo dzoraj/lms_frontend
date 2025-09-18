@@ -1,0 +1,103 @@
+<div *ngIf="loading()">Loading…</div>
+<div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+<div *ngIf="info()" class="alert alert-success">{{ info() }}</div>
+
+<div *ngIf="defn() as d">
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    <input class="form-control" [(ngModel)]="d.title">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Instructions</label>
+    <textarea class="form-control" rows="3" [(ngModel)]="d.instructions"></textarea>
+  </div>
+
+  <div class="row g-2 align-items-center mb-2">
+    <div class="col-auto">
+      <span class="badge bg-secondary">KE Max: {{ maxPoints() }}</span>
+    </div>
+    <div class="col-auto">
+      <span class="badge" [ngClass]="sumPoints() === maxPoints() ? 'bg-success' : 'bg-danger'">
+        Sum(questions): {{ sumPoints() }}
+      </span>
+    </div>
+    <div class="col-auto">
+      <label class="form-check-label me-2">Active</label>
+      <input type="checkbox" class="form-check-input" [(ngModel)]="d.active">
+    </div>
+    <div class="col-auto ms-auto">
+      <button class="btn btn-primary" (click)="save()">Save</button>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="d-flex justify-content-between align-items-center">
+    <h5>Questions</h5>
+    <button class="btn btn-outline-primary btn-sm" (click)="addQuestion()">+ Add question</button>
+  </div>
+
+  <div class="qcard" *ngFor="let q of d.questions; index as qi">
+    <div class="d-flex justify-content-between align-items-center">
+      <strong>#{{ qi + 1 }}</strong>
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary" (click)="moveQuestion(qi,-1)">↑</button>
+        <button class="btn btn-outline-secondary" (click)="moveQuestion(qi, 1)">↓</button>
+        <button class="btn btn-outline-danger" (click)="removeQuestion(qi)">✕</button>
+      </div>
+    </div>
+
+    <div class="row g-2 mt-2">
+      <div class="col-md-7">
+        <input class="form-control" placeholder="Question text" [(ngModel)]="q.text">
+      </div>
+      <div class="col-md-2">
+        <select class="form-select" [(ngModel)]="q.type">
+          <option value="SINGLE">SINGLE</option>
+          <option value="MULTI">MULTI</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="number" min="0" class="form-control" placeholder="Points" [(ngModel)]="q.points">
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <table class="table table-sm align-middle">
+        <thead>
+          <tr>
+            <th style="width:42px;"></th>
+            <th>Text</th>
+            <th style="width:160px;">Correct</th>
+            <th style="width:120px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of q.options; index as oi">
+            <td class="text-nowrap">
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary" (click)="moveOption(qi,oi,-1)">↑</button>
+                <button class="btn btn-outline-secondary" (click)="moveOption(qi,oi, 1)">↓</button>
+              </div>
+            </td>
+            <td><input class="form-control" [(ngModel)]="o.text" placeholder="Option text"></td>
+            <td class="text-center">
+              <ng-container [ngSwitch]="q.type">
+                <input *ngSwitchCase="'SINGLE'" type="radio" name="single{{qi}}" [checked]="o.correct"
+                       (change)="setSingleCorrect(qi, oi)">
+                <input *ngSwitchCase="'MULTI'" type="checkbox" [checked]="o.correct"
+                       (change)="toggleMultiCorrect(qi, oi)">
+              </ng-container>
+            </td>
+            <td class="text-end">
+              <button class="btn btn-outline-danger btn-sm" (click)="removeOption(qi, oi)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button class="btn btn-outline-primary btn-sm" (click)="addOption(qi)">+ Add option</button>
+    </div>
+  </div>
+</div>

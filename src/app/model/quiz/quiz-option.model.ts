@@ -1,6 +1,6 @@
 export interface QuizOption {
   id?: number;
   text: string;
-  correct: boolean;
+  correct?: boolean | null; 
   orderIndex?: number;
 }
