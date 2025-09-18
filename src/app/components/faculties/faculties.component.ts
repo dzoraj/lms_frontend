@@ -27,24 +27,31 @@ export class FacultiesComponent implements OnInit {
     forkJoin({
       faculties: this.dynamicService.getAll<any>('faculty'),
       universities: this.dynamicService.getAll<any>('university'),
-      teachers: this.dynamicService.getAll<any>('teacher')
-    }).subscribe(({ faculties, universities, teachers }) => {
-      this.faculties = faculties.map((f: any) => {
-        const teacher = teachers.find((t: any) => t.id === f.dean);
-        const uni = universities.find((u: any) => u.id === f.university);
+      teachers: this.dynamicService.getAll<any>('teacher'),
+      addresses: this.dynamicService.getAll<any>('address')
+    }).subscribe(({ faculties, universities, teachers, addresses }) => {
+      const teacherById: Record<number, any> = Object.fromEntries((teachers ?? []).map((t: any) => [t.id, t]));
+      const uniById: Record<number, any> = Object.fromEntries((universities ?? []).map((u: any) => [u.id, u]));
+      const addrById: Record<number, any> = Object.fromEntries((addresses ?? []).map((a: any) => [a.id, a]));
+
+      this.faculties = (faculties ?? []).map((f: any) => {
+        const dean = teacherById[f.deanId];
+        const uni = uniById[f.universityId];
+        const addrList: string =
+          (f.addressIds ?? [])
+            .map((aid: number) => addrById[aid])
+            .filter(Boolean)
+            .map((a: any) => `${a.address} ${a.number}, ${a.city}, ${a.country}`)
+            .join(' | ') || 'No addresses';
 
         return {
           id: f.id,
           name: f.name,
-          Dean: teacher ? teacher.name : `Teacher #${f.dean}`,
-          university: uni ? uni.name : `University #${f.university}`,
-          addresses: f.addresses?.map(
-            (a: any) => `${a.address} ${a.number}, ${a.city}, ${a.country}`
-          ).join(' | ') || 'No addresses'
+          Dean: dean?.name ?? (f.deanId ? `Teacher #${f.deanId}` : '—'),
+          University: uni?.name ?? (f.universityId ? `University #${f.universityId}` : '—'),
+          Addresses: addrList
         };
       });
-
-      console.log('Mapped faculties:', this.faculties);
     });
   }
 }

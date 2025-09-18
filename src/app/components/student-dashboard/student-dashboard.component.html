@@ -69,7 +69,7 @@
                 <tr *ngFor="let pe of studentDto.passedExams">
                   <td>{{ pe.subjectName }}</td>
                   <td>{{ pe.espb }}</td>
-                  <td>{{ pe.points }}</td>
+                  <td>{{ pe.points }} / {{ pe.maxPoints }}</td>
                   <td>{{ pe.grade ?? 'Fail' }}</td>
                 </tr>
               </tbody>
@@ -181,8 +181,10 @@
                     <button class="btn btn-success btn-sm ms-2" (click)="startQuiz(exam)" [disabled]="!canStart(exam)">
                       Start
                     </button>
-                    <div class="small mt-1 text-warning" *ngIf="exam.applied && windowStatus(exam)==='before'">Not yet start time</div>
-                    <div class="small mt-1 text-danger" *ngIf="exam.applied && windowStatus(exam)==='after'">Exam window ended</div>
+                    <div class="small mt-1 text-warning" *ngIf="exam.applied && windowStatus(exam)==='before'">Not yet
+                      start time</div>
+                    <div class="small mt-1 text-danger" *ngIf="exam.applied && windowStatus(exam)==='after'">Exam window
+                      ended</div>
                     <div class="small mt-1 text-muted" *ngIf="exam.attempted">Already submitted</div>
                   </td>
 
